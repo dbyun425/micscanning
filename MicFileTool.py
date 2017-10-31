@@ -102,7 +102,7 @@ def read_mic_file(fname):
     # print sw
 
 
-def plot_mic(snp,sw,plotType,minConfidence,scattersize=2):
+def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
     '''
     plot the mic file
     :param snp:
@@ -111,7 +111,7 @@ def plot_mic(snp,sw,plotType,minConfidence,scattersize=2):
     :param minConfidence:
     :return:
     '''
-    snp = snp[snp[:,9]>=minConfidence,:]
+    snp = snp[minConfidence<=snp[:,9]<=maxConfidence,:]
     N = snp.shape[0]
     mat = np.empty([N,3,3])
     quat = np.empty([N,4])
@@ -177,8 +177,8 @@ class MicFile():
         print('shape of snp is {0}'.format(snp.shape))
         return sw,snp
 
-    def plot_mic_patches(self,plotType,minConfidence):
-        indx=self.snp[:,9]>=minConfidence
+    def plot_mic_patches(self,plotType,minConfidence,maxConfidence):
+        indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
         tsw1=minsw*0.5
         tsw2=-minsw*0.5*3**0.5
@@ -227,14 +227,14 @@ class MicFile():
             ax.set_ylim([-0.6,0.6])
             plt.show()
 
-def simple_plot(snp,sw,plotType,minConfidence):
+def simple_plot(snp,sw,plotType,minConfidence,maxConfidence):
     '''
     just plot the location, without orientation information
     :param snp:
     :param sw:
     :return:
     '''
-    snp = snp[snp[:,9]>minConfidence,:]
+    snp = snp[minConfidence<snp[:,9]<maxConfidence,:]
     plt.plot(snp[:,0],snp[:,1],'*-')
     plt.show()
 
