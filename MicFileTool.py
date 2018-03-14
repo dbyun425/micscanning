@@ -177,8 +177,12 @@ class MicFile():
         print('shape of snp is {0}'.format(snp.shape))
         return sw,snp
 
-    def plot_mic_patches(self,plotType,minConfidence,maxConfidence):
-        indx=minConfidence<=self.snp[:,9]<=maxConfidence
+    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,indices):
+        indx = []
+        for i in range(0,len(self.snp)):
+            if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence and i in indices:
+                indx.append(i)
+        #indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
         tsw1=minsw*0.5
         tsw2=-minsw*0.5*3**0.5
@@ -206,14 +210,49 @@ class MicFile():
             quat = np.empty([N,4])
             rod = np.empty([N,3])
             if self.bcolor1==False:
+                maxr = 0.0
+                minr = 0.0
+                maxg = 0.0
+                ming = 0.0
+                maxb = 0.0
+                minb = 0.0
                 for i in range(N):
-                    mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
-                    quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
-                    rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
+                    if i in indx:
+                        mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
+                        quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
+                        rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
+                        if i == indx[0]:
+                            maxr = rod[i,0]
+                            minr = rod[i,0]
+                            maxg = rod[i,1]
+                            ming = rod[i,1]
+                            maxb = rod[i,2]
+                            minb = rod[i,2]
+                        else:
+                            if rod[i,0] > maxr:
+                                maxr = rod[i,0]
+                            elif rod[i,0] < minr:
+                                minr = rod[i,0]
+                            if rod[i,1] > maxg:
+                                maxg = rod[i,1]
+                            elif rod[i,1] < ming:
+                                ming = rod[i,1]
+                            if rod[i,2] > maxb:
+                                maxb = rod[i,2]
+                            elif rod[i,2] < minb:
+                                minb = rod[i,2]
+                    else:
+                        rod[i,:]=[0.0,0.0,0.0]
                 print "Current rod values: ",rod
-                self.color1=(rod+np.array([1,1,1]))/2
+                maxrgb = [maxr,maxg,maxb]
+                minrgb = [minr,ming,minb]
+                colors = rod
+                for j in range(N):
+                    for k in range(0,3):
+                        colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
+                self.color1= colors
                 print "Color: ", self.color1
-                self.bcolor1=True
+                #self.bcolor1=True
             if self.bpatches==False:
                 xy=self.snp[:,:2]
                 tmp=np.asarray([[tsw1]*ntri,(-1)**self.snp[:,3]*tsw2]).transpose()
