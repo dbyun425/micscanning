@@ -2,6 +2,10 @@
 Writen by He Liu
 Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
+
+Modifications for coloring made by Doyee Byun
+Including References to VoxelTool written by Grason Frazier
+2018
 '''
 import numpy as np
 import matplotlib
@@ -11,6 +15,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 from matplotlib.collections import PolyCollection
 import RotRep
+from VoxelTool import VoxelClick
 
 def dist_to_line(point,line):
     '''
@@ -89,7 +94,7 @@ def read_mic_file(fname):
         try:
             snp = np.array([[float(i) for i in s.split('\t')] for s in content[1:]])
         except ValueError:
-            print 'unknown deliminater'
+            print('unknown deliminater')
 
     print('sw is {0} \n'.format(sw))
     print('shape of snp is {0}'.format(snp.shape))
@@ -122,14 +127,14 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         plt.colorbar(sc)
         plt.show()
     if plotType==3:
-        print 'h'
+        print('h')
         for i in range(N):
             mat[i,:,:] = RotRep.EulerZXZ2Mat(snp[i,6:9]/180*np.pi)
             #print mat[i,:,:]
             quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
             #print quat[i,:]
             rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-        print rod
+        print(rod)
         fig, ax = plt.subplots()
         ax.scatter(snp[:,0],snp[:,1],s=scattersize,facecolors=(rod+np.array([1,1,1]))/2)
         ax.axis('scaled')
@@ -141,6 +146,7 @@ class MicFile():
         self.color2=self.snp[:,9]
         self.bpatches=False
         self.bcolor1=False
+        print("yo, I read a file")
 
     def read_mic_file(self,fname):
         '''
@@ -171,13 +177,13 @@ class MicFile():
             try:
                 snp = np.array([[float(i) for i in s.split('\t')] for s in content[1:]])
             except ValueError:
-                print 'unknown deliminater'
+                print('unknown deliminater')
 
         print('sw is {0} \n'.format(sw))
         print('shape of snp is {0}'.format(snp.shape))
         return sw,snp
 
-    def angle_limiter(indx, snp,angles):
+    def angle_limiter(self,indx, snp,angles):
         #set angle limits here
         new_indx = []
         xl = angles[0]-1.0
@@ -201,7 +207,7 @@ class MicFile():
             if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
                 indx.append(i)
         if limitang:
-            indx = angle_limiter(indx,self.snp,angles)
+            indx = self.angle_limiter(indx,self.snp,angles)
         #indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
         tsw1=minsw*0.5
@@ -263,7 +269,7 @@ class MicFile():
                                 minb = rod[i,2]
                     else:
                         rod[i,:]=[0.0,0.0,0.0]
-                print "Current rod values: ",rod
+                print("Current rod values: ",rod)
                 maxrgb = [maxr,maxg,maxb]
                 minrgb = [minr,ming,minb]
                 colors = rod
@@ -271,7 +277,7 @@ class MicFile():
                     for k in range(0,3):
                         colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
                 self.color1= colors
-                print "Color: ", self.color1
+                print("Color: ", self.color1)
                 #self.bcolor1=True
             if self.bpatches==False:
                 xy=self.snp[:,:2]
@@ -284,7 +290,11 @@ class MicFile():
             ax.add_collection(p)
             ax.set_xlim([-0.6,0.6])
             ax.set_ylim([-0.6,0.6])
+            voxels = VoxelClick(fig, self.snp, self.sw, self)
+            voxels.connect()
+
             plt.show()
+            #return voxels.clicked_angles
 
 def simple_plot(snp,sw,plotType,minConfidence,maxConfidence):
     '''
@@ -302,7 +312,7 @@ def test_for_dist():
     point = np.array([0.2,0.2])
     line = np.array([[0,0.24],[0.22,0.13]])
     dist = dist_to_line(point,line)
-    print 'dist should be',dist
+    print('dist should be',dist)
     plt.plot(point[0],point[1])
     plt.plot(line[:,0],line[:,1])
     plt.show()
@@ -310,7 +320,7 @@ def test_for_dist():
 def test_euler2mat():
     pass
 def test_plot_mic():
-    sw,snp = read_mic_file('Ti7_SYF_.mic.LBFS')
+    sw,snp = read_mic_file('395z0.mic.LBFS')
     #snp = snp[:100,:]
     plot_mic(snp,sw,3,0.35)
 
@@ -323,7 +333,7 @@ def combine_mic():
     plot_mic(snp,sw_77,3,0)
     save_mic_file('eulerangles',snp[:,6:9],1)
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
     # sw,snp = read_mic_file('1000micron9GenSquare0.5.mic')
     #simple_plot(snp,sw,0,0.5)
@@ -335,5 +345,7 @@ if __name__ == '__main__':
     #save_mic_file('Cu_combine.mic',snp,sw_82)
     #test_for_dist()
     #test_euler2mat()
-    test_plot_mic()
+    #test_plot_mic()
     #combine_mic()
+clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0,1,False,[])
+print(clicked_angles) #these are the new_indices from where you clicked, I am working on integrating it into the class type
