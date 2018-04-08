@@ -2,6 +2,9 @@
 Writen by He Liu
 Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
+
+Modified by Doyee Byun & Grayzon Frazier
+2018
 '''
 import numpy as np
 import matplotlib
@@ -317,4 +320,3 @@ if __name__ == '__main__':
     #test_euler2mat()
     test_plot_mic()
     #combine_mic()
-
