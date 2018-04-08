@@ -177,21 +177,31 @@ class MicFile():
         print('shape of snp is {0}'.format(snp.shape))
         return sw,snp
 
-    def angle_limiter(indx, snp):
+    def angle_limiter(indx, snp,angles):
         #set angle limits here
-        x = 0
-        y = 0
-        z = 0
-        new_indx = indx
+        new_indx = []
+        xl = angles[0]-1.0
+        xh = angles[0]+1.0
+        yl = angles[1]-1.0
+        yh = angles[1]+1.0
+        zl = angles[2]-1.0
+        zh = angles[2]+1.0
+        for i in range(0,len(indx)):
+            j = indx[i]
+            x = self.snp[j,6]
+            y = self.snp[j,7]
+            z = self.snp[j,8]
+            if x > xl and x < xh and y > yl and y < yh and z > zl and z < zh:
+                new_indx.append(indx[i])
         return new_indx
 
-    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,indices,limitang):
+    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,limitang):
         indx = []
         for i in range(0,len(self.snp)):
-            if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence and i in indices:
+            if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
                 indx.append(i)
         if limitang:
-            indx = angle_limiter(indx,self.snp)
+            indx = angle_limiter(indx,self.snp,angles)
         #indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
         tsw1=minsw*0.5
@@ -327,4 +337,3 @@ if __name__ == '__main__':
     #test_euler2mat()
     test_plot_mic()
     #combine_mic()
-
