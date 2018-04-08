@@ -195,7 +195,7 @@ class MicFile():
                 new_indx.append(indx[i])
         return new_indx
 
-    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,limitang):
+    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,limitang,angles):
         indx = []
         for i in range(0,len(self.snp)):
             if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
