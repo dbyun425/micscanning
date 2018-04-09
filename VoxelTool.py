@@ -78,7 +78,7 @@ class VoxelClick():
                 self.new_indices.append(i)
         '''
         print("------------------------------------------------------\nAverage Angles:", list_average(Orientation1), list_average(Orientation2), list_average(Orientation3))
-        self.mic.plot_mic_patches(plotType=1,minConfidence=0.0,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
+        self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
 
     def connect(self):
         cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)

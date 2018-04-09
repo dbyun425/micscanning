@@ -347,5 +347,5 @@ def combine_mic():
     #test_euler2mat()
     #test_plot_mic()
     #combine_mic()
-clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0,1,False,[])
+clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
 print(clicked_angles) #these are the new_indices from where you clicked, I am working on integrating it into the class type
