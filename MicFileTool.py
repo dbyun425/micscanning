@@ -4,7 +4,7 @@ Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
 
 Modifications for coloring made by Doyee Byun
-Including References to VoxelTool written by Grason Frazier
+Including References to VoxelTool written by Grayson Frazier
 April 10, 2018
 '''
 import numpy as np
