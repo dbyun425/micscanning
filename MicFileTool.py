@@ -201,7 +201,7 @@ class MicFile():
                 new_indx.append(indx[i])
         return new_indx
 
-    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,limitang,angles):
+    def plot_mic_patches(self,plotType=2,minConfidence=0,maxConfidence=1,limitang=False,angles=[]):
         indx = []
         for i in range(0,len(self.snp)):
             if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
@@ -288,11 +288,30 @@ class MicFile():
             p=PolyCollection(self.patches[indx],cmap='viridis')
             p.set_color(self.color1[indx])
             ax.add_collection(p)
-            ax.set_xlim([-0.6,0.6])
-            ax.set_ylim([-0.6,0.6])
+
+            xmin = self.snp[indx[0],0]
+            xmax = self.snp[indx[0],0]
+            ymin = self.snp[indx[0],1]
+            ymax = self.snp[indx[0],1]
+            for i in indx:
+                if self.snp[i,0] <= xmin:
+                    xmin = self.snp[i,0]
+                if self.snp[i,0] >= xmax:
+                    xmax = self.snp[i,0]
+                if self.snp[i,1] <= ymin:
+                    ymin = self.snp[i,1]
+                if self.snp[i,1] >= ymax:
+                    ymax = self.snp[i,1]
+            if abs(xmax-xmin) > abs(ymax-ymin):
+                side_length = abs(xmax-xmin)
+            else:
+                side_length = abs(ymax-ymin)
+            ax.set_xlim([xmin -.1 ,xmin + side_length +.1])
+            ax.set_ylim([ymin -.1 ,ymin + side_length +.1])
+            #note, previously, -.6<=x,y<=.6
+
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
-
             plt.show()
             #return voxels.clicked_angles
 
@@ -348,4 +367,4 @@ def combine_mic():
     #test_plot_mic()
     #combine_mic()
 clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
-print(clicked_angles) #these are the new_indices from where you clicked, I am working on integrating it into the class type
+print(clicked_angles)
