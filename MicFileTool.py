@@ -146,7 +146,6 @@ class MicFile():
         self.color2=self.snp[:,9]
         self.bpatches=False
         self.bcolor1=False
-        print("yo, I read a file")
 
     def read_mic_file(self,fname):
         '''
