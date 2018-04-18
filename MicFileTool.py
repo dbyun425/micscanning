@@ -200,7 +200,7 @@ class MicFile():
                 new_indx.append(indx[i])
         return new_indx
 
-    def plot_mic_patches(self,plotType=2,minConfidence=0,maxConfidence=1,limitang=False,angles=[]):
+    def plot_mic_patches(self,plotType=1,minConfidence=0,maxConfidence=1,limitang=False,angles=[]):
         indx = []
         for i in range(0,len(self.snp)):
             if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
@@ -366,4 +366,4 @@ def combine_mic():
     #test_plot_mic()
     #combine_mic()
 clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
-print(clicked_angles)
+#MicFile("Al_final_z1_refit.mic").plot_mic_patches()
