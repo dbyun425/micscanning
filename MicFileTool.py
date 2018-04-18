@@ -287,7 +287,7 @@ class MicFile():
             p=PolyCollection(self.patches[indx],cmap='viridis')
             p.set_color(self.color1[indx])
             ax.add_collection(p)
-
+            '''Yo future grayson, make sure interactive is a parameter!'''
             xmin = self.snp[indx[0],0]
             xmax = self.snp[indx[0],0]
             ymin = self.snp[indx[0],1]
