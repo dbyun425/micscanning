@@ -1,3 +1,10 @@
+'''
+Changes (1/8/2018 by Grayson Frazier)
+
+1) Added parentheses to print statements for python 3+ (should not affect older versions)
+
+'''
+
 import matplotlib.pyplot as plt
 import numpy as np
 from math import atan2
@@ -270,7 +277,7 @@ def GetSymRotMat(symtype='Cubic'):
 
         return m
     else:
-        print "not implemented yet"
+        print ("not implemented yet")
         return 0
 
 def Orien2FZ(m,symtype='Cubic'):
@@ -376,7 +383,7 @@ def Misorien2FZ2(m1,m2,symtype='Cubic'):
             The misorientation angle. (0~180 degree)
     """
     if symtype!='Cubic':
-        print "only calculate axis for cubic symmetry"
+        print ("only calculate axis for cubic symmetry")
         return
     m2=np.matrix(m2)
     dm=(m2.T).dot(m1)
@@ -428,7 +435,7 @@ def Misorien2FZ3(m1,m2,symtype='Cubic'):
             The misorientation angle. (0~180 degree)
     """
     if symtype!='Cubic':
-        print "only calculate axis for cubic symmetry"
+        print ("only calculate axis for cubic symmetry")
         return
     m2=np.matrix(m2)
     dm=(m2.T).dot(m1)
