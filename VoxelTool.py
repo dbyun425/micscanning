@@ -95,7 +95,9 @@ class VoxelClick():
         else:
             print("------------------------------------------------------\n Angles:", list_average(Orientation1), list_average(Orientation2), list_average(Orientation3))
 
+        self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
         if event.dblclick:#double click to replot the grain
+            print("gonna plot now")
             self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
 
     def connect(self):

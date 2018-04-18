@@ -4,7 +4,7 @@ Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
 
 Modifications for coloring made by Doyee Byun
-Including References to VoxelTool written by Grayson Frazier
+Including References to VoxelTool and Replotting Modifications written by Grayson Frazier
 April 10, 2018
 >>>>>>> anglelim
 '''
@@ -186,12 +186,12 @@ class MicFile():
     def angle_limiter(self,indx, snp,angles):
         #set angle limits here
         new_indx = []
-        xl = angles[0]-1.0
-        xh = angles[0]+1.0
-        yl = angles[1]-1.0
-        yh = angles[1]+1.0
-        zl = angles[2]-1.0
-        zh = angles[2]+1.0
+        xl = angles[0]- .1*angles[0]
+        xh = angles[0]+ .1*angles[0]
+        yl = angles[1]- .1*angles[1]
+        yh = angles[1]+ .1*angles[1]
+        zl = angles[2]- .1*angles[2]
+        zh = angles[2]+ .1*angles[2]
         for i in range(0,len(indx)):
             j = indx[i]
             x = self.snp[j,6]
@@ -203,9 +203,12 @@ class MicFile():
 
     def plot_mic_patches(self,plotType=1,minConfidence=0,maxConfidence=1,limitang=False,angles=[]):
         indx = []
+        not_indx = []
         for i in range(0,len(self.snp)):
             if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
                 indx.append(i)
+            else:
+                not_indx.append(i)
         if limitang:
             indx = self.angle_limiter(indx,self.snp,angles)
         #indx=minConfidence<=self.snp[:,9]<=maxConfidence
@@ -242,32 +245,31 @@ class MicFile():
                 ming = 0.0
                 maxb = 0.0
                 minb = 0.0
-                for i in range(N):
-                    if i in indx:
-                        mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
-                        quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
-                        rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-                        if i == indx[0]:
-                            maxr = rod[i,0]
-                            minr = rod[i,0]
-                            maxg = rod[i,1]
-                            ming = rod[i,1]
-                            maxb = rod[i,2]
-                            minb = rod[i,2]
-                        else:
-                            if rod[i,0] > maxr:
-                                maxr = rod[i,0]
-                            elif rod[i,0] < minr:
-                                minr = rod[i,0]
-                            if rod[i,1] > maxg:
-                                maxg = rod[i,1]
-                            elif rod[i,1] < ming:
-                                ming = rod[i,1]
-                            if rod[i,2] > maxb:
-                                maxb = rod[i,2]
-                            elif rod[i,2] < minb:
-                                minb = rod[i,2]
+                for i in indx:
+                    mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
+                    quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
+                    rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
+                    if i == indx[0]:
+                        maxr = rod[i,0]
+                        minr = rod[i,0]
+                        maxg = rod[i,1]
+                        ming = rod[i,1]
+                        maxb = rod[i,2]
+                        minb = rod[i,2]
                     else:
+                        if rod[i,0] > maxr:
+                            maxr = rod[i,0]
+                        elif rod[i,0] < minr:
+                            minr = rod[i,0]
+                        if rod[i,1] > maxg:
+                            maxg = rod[i,1]
+                        elif rod[i,1] < ming:
+                            ming = rod[i,1]
+                        if rod[i,2] > maxb:
+                            maxb = rod[i,2]
+                        elif rod[i,2] < minb:
+                            minb = rod[i,2]
+                for i in not_indx:
                         rod[i,:]=[0.0,0.0,0.0]
                 print("Current rod values: ",rod)
                 maxrgb = [maxr,maxg,maxb]
@@ -308,6 +310,7 @@ class MicFile():
                 side_length = abs(ymax-ymin)
             ax.set_xlim([xmin -.1 ,xmin + side_length +.1])
             ax.set_ylim([ymin -.1 ,ymin + side_length +.1])
+            plt.axis("equal")
             #note, previously, -.6<=x,y<=.6
 
             voxels = VoxelClick(fig, self.snp, self.sw, self)
@@ -367,5 +370,7 @@ def combine_mic():
     #test_plot_mic()
     #combine_mic()
 
-clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
+#clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
+#MicFile("395z0.mic.LBFS").plot_mic_patches(2,0.8,1,False,[])
+MicFile("Al_final_z1_refit.mic").plot_mic_patches()
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
