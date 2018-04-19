@@ -186,12 +186,12 @@ class MicFile():
     def angle_limiter(self,indx, snp,angles):
         #set angle limits here
         new_indx = []
-        xl = angles[0]- .1*angles[0]
-        xh = angles[0]+ .1*angles[0]
-        yl = angles[1]- .1*angles[1]
-        yh = angles[1]+ .1*angles[1]
-        zl = angles[2]- .1*angles[2]
-        zh = angles[2]+ .1*angles[2]
+        xl = angles[0]- .05*angles[0]
+        xh = angles[0]+ .05*angles[0]
+        yl = angles[1]- .05*angles[1]
+        yh = angles[1]+ .05*angles[1]
+        zl = angles[2]- .05*angles[2]
+        zh = angles[2]+ .05*angles[2]
         for i in range(0,len(indx)):
             j = indx[i]
             x = self.snp[j,6]
@@ -370,7 +370,7 @@ def combine_mic():
     #test_plot_mic()
     #combine_mic()
 
-#clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
+clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
 #MicFile("395z0.mic.LBFS").plot_mic_patches(2,0.8,1,False,[])
 MicFile("Al_final_z1_refit.mic").plot_mic_patches()
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
