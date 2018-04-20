@@ -98,10 +98,12 @@ class VoxelClick():
         self.clicked_angles = [avg_Orientation1, avg_Orientation2, avg_Orientation3]
 
         if len(indices)>1:
-            print("------------------------------------------------------\nAverage Angles:", list_average(Orientation1), list_average(Orientation2), list_average(Orientation3))
+            print("------------------------------------------------------\nAverage Euler Angles: (", list_average(Orientation1), ",", list_average(Orientation2), ",", list_average(Orientation3), ")")
+            print("To replot, press enter")
         else:
-            print("------------------------------------------------------\n Angles:", list_average(Orientation1), list_average(Orientation2), list_average(Orientation3))
-
+            print("------------------------------------------------------\nEuler Angles: (", list_average(Orientation1), ",", list_average(Orientation2), ",", list_average(Orientation3), ")")
+            print("To replot, press enter")
+            
         #self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
         if event.dblclick: #if event.dblclick:#double click to replot the grain
             print("gonna plot now")
