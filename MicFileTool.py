@@ -4,8 +4,8 @@ Automatically take in account +/- 15% angles (or maybe 10)
 Then add a slider which goes from 0 to 15 via .01%
 To update, just set the alpha color of that specific triangle = 0, or rgb = [0,0,0]
 '''
-
-Writen by He Liu
+'''
+Originally writen by He Liu
 Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
 
