@@ -41,6 +41,13 @@ class VoxelClick():
         self.size = self.sw/2**(snp[1,4])
         self.mic = Mic
 
+    def press(self, event):
+        if event.key == None:
+            return
+        if event.key == "enter":
+            assert self.clicked_angles != [], "Please click a voxel first"
+            self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
+
     def onclick(self, event):
         if event.xdata == None or event.ydata == None:
             return #ensures the mouse event is on the canvas
@@ -96,9 +103,10 @@ class VoxelClick():
             print("------------------------------------------------------\n Angles:", list_average(Orientation1), list_average(Orientation2), list_average(Orientation3))
 
         #self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
-        if event.dblclick:#double click to replot the grain
+        if event.dblclick: #if event.dblclick:#double click to replot the grain
             print("gonna plot now")
             self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
 
     def connect(self):
         cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
+        self.fig.canvas.mpl_connect('key_press_event', self.press)
