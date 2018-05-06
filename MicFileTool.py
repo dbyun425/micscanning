@@ -3,8 +3,14 @@ Writen by He Liu
 Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
 
+<<<<<<< HEAD
 Modified by Doyee Byun & Grayzon Frazier
 2018
+=======
+Modifications for coloring made by Doyee Byun
+Including References to VoxelTool written by Grayson Frazier
+April 10, 2018
+>>>>>>> anglelim
 '''
 import numpy as np
 import matplotlib
@@ -14,6 +20,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 from matplotlib.collections import PolyCollection
 import RotRep
+from VoxelTool import VoxelClick
 
 def dist_to_line(point,line):
     '''
@@ -92,7 +99,7 @@ def read_mic_file(fname):
         try:
             snp = np.array([[float(i) for i in s.split('\t')] for s in content[1:]])
         except ValueError:
-            print 'unknown deliminater'
+            print('unknown deliminater')
 
     print('sw is {0} \n'.format(sw))
     print('shape of snp is {0}'.format(snp.shape))
@@ -125,14 +132,14 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         plt.colorbar(sc)
         plt.show()
     if plotType==3:
-        print 'h'
+        print('h')
         for i in range(N):
             mat[i,:,:] = RotRep.EulerZXZ2Mat(snp[i,6:9]/180*np.pi)
             #print mat[i,:,:]
             quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
             #print quat[i,:]
             rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-        print rod
+        print(rod)
         fig, ax = plt.subplots()
         ax.scatter(snp[:,0],snp[:,1],s=scattersize,facecolors=(rod+np.array([1,1,1]))/2)
         ax.axis('scaled')
@@ -174,17 +181,37 @@ class MicFile():
             try:
                 snp = np.array([[float(i) for i in s.split('\t')] for s in content[1:]])
             except ValueError:
-                print 'unknown deliminater'
+                print('unknown deliminater')
 
         print('sw is {0} \n'.format(sw))
         print('shape of snp is {0}'.format(snp.shape))
         return sw,snp
 
-    def plot_mic_patches(self,plotType,minConfidence,maxConfidence,indices):
+    def angle_limiter(self,indx, snp,angles):
+        #set angle limits here
+        new_indx = []
+        xl = angles[0]-1.0
+        xh = angles[0]+1.0
+        yl = angles[1]-1.0
+        yh = angles[1]+1.0
+        zl = angles[2]-1.0
+        zh = angles[2]+1.0
+        for i in range(0,len(indx)):
+            j = indx[i]
+            x = self.snp[j,6]
+            y = self.snp[j,7]
+            z = self.snp[j,8]
+            if x > xl and x < xh and y > yl and y < yh and z > zl and z < zh:
+                new_indx.append(indx[i])
+        return new_indx
+
+    def plot_mic_patches(self,plotType=1,minConfidence=0,maxConfidence=1,limitang=False,angles=[]):
         indx = []
         for i in range(0,len(self.snp)):
-            if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence and i in indices:
+            if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
                 indx.append(i)
+        if limitang:
+            indx = self.angle_limiter(indx,self.snp,angles)
         #indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
         tsw1=minsw*0.5
@@ -246,7 +273,7 @@ class MicFile():
                                 minb = rod[i,2]
                     else:
                         rod[i,:]=[0.0,0.0,0.0]
-                print "Current rod values: ",rod
+                print("Current rod values: ",rod)
                 maxrgb = [maxr,maxg,maxb]
                 minrgb = [minr,ming,minb]
                 colors = rod
@@ -254,7 +281,7 @@ class MicFile():
                     for k in range(0,3):
                         colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
                 self.color1= colors
-                print "Color: ", self.color1
+                print("Color: ", self.color1)
                 #self.bcolor1=True
             if self.bpatches==False:
                 xy=self.snp[:,:2]
@@ -265,9 +292,32 @@ class MicFile():
             p=PolyCollection(self.patches[indx],cmap='viridis')
             p.set_color(self.color1[indx])
             ax.add_collection(p)
-            ax.set_xlim([-0.6,0.6])
-            ax.set_ylim([-0.6,0.6])
+            '''Yo future grayson, make sure interactive is a parameter!'''
+            xmin = self.snp[indx[0],0]
+            xmax = self.snp[indx[0],0]
+            ymin = self.snp[indx[0],1]
+            ymax = self.snp[indx[0],1]
+            for i in indx:
+                if self.snp[i,0] <= xmin:
+                    xmin = self.snp[i,0]
+                if self.snp[i,0] >= xmax:
+                    xmax = self.snp[i,0]
+                if self.snp[i,1] <= ymin:
+                    ymin = self.snp[i,1]
+                if self.snp[i,1] >= ymax:
+                    ymax = self.snp[i,1]
+            if abs(xmax-xmin) > abs(ymax-ymin):
+                side_length = abs(xmax-xmin)
+            else:
+                side_length = abs(ymax-ymin)
+            ax.set_xlim([xmin -.1 ,xmin + side_length +.1])
+            ax.set_ylim([ymin -.1 ,ymin + side_length +.1])
+            #note, previously, -.6<=x,y<=.6
+
+            voxels = VoxelClick(fig, self.snp, self.sw, self)
+            voxels.connect()
             plt.show()
+            #return voxels.clicked_angles
 
 def simple_plot(snp,sw,plotType,minConfidence,maxConfidence):
     '''
@@ -285,7 +335,7 @@ def test_for_dist():
     point = np.array([0.2,0.2])
     line = np.array([[0,0.24],[0.22,0.13]])
     dist = dist_to_line(point,line)
-    print 'dist should be',dist
+    print('dist should be',dist)
     plt.plot(point[0],point[1])
     plt.plot(line[:,0],line[:,1])
     plt.show()
@@ -293,7 +343,7 @@ def test_for_dist():
 def test_euler2mat():
     pass
 def test_plot_mic():
-    sw,snp = read_mic_file('Ti7_SYF_.mic.LBFS')
+    sw,snp = read_mic_file('395z0.mic.LBFS')
     #snp = snp[:100,:]
     plot_mic(snp,sw,3,0.35)
 
@@ -306,7 +356,7 @@ def combine_mic():
     plot_mic(snp,sw_77,3,0)
     save_mic_file('eulerangles',snp[:,6:9],1)
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
     # sw,snp = read_mic_file('1000micron9GenSquare0.5.mic')
     #simple_plot(snp,sw,0,0.5)
@@ -318,5 +368,10 @@ if __name__ == '__main__':
     #save_mic_file('Cu_combine.mic',snp,sw_82)
     #test_for_dist()
     #test_euler2mat()
-    test_plot_mic()
+    #test_plot_mic()
     #combine_mic()
+<<<<<<< HEAD
+=======
+clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
+#MicFile("Al_final_z1_refit.mic").plot_mic_patches()
+>>>>>>> anglelim
