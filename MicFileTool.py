@@ -3,14 +3,14 @@ Writen by He Liu
 Wed Apr 26 2017
 This script will contains the basic tool for reading mic file and plot them.
 
-<<<<<<< HEAD
+
 Modified by Doyee Byun & Grayzon Frazier
 2018
-=======
+
 Modifications for coloring made by Doyee Byun
 Including References to VoxelTool written by Grayson Frazier
 April 10, 2018
->>>>>>> anglelim
+
 '''
 import numpy as np
 import matplotlib
@@ -370,8 +370,6 @@ def combine_mic():
     #test_euler2mat()
     #test_plot_mic()
     #combine_mic()
-<<<<<<< HEAD
-=======
+
 clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
->>>>>>> anglelim
