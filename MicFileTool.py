@@ -145,6 +145,52 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         ax.axis('scaled')
         plt.show()
 
+
+def plot_square_mic(squareMicData, minHitRatio):
+    '''
+    plot the square mic data
+    image already inverted, x-horizontal, y-vertical, x dow to up, y: left to right
+    :param squareMicData: [NVoxelX,NVoxelY,10], each Voxel conatains 10 columns:
+            0-2: voxelpos [x,y,z]
+            3-5: euler angle
+            6: hitratio
+            7: maskvalue. 0: no need for recon, 1: active recon region
+            8: voxelsize
+            9: additional information
+    :return:
+    '''
+    mat = RotRep.EulerZXZ2MatVectorized(squareMicData[:,:,3:6].reshape([-1,3])/180.0 *np.pi )
+    quat = np.empty([mat.shape[0],4])
+    rod = np.empty([mat.shape[0],3])
+    for i in range(mat.shape[0]):
+        quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
+        rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
+    hitRatioMask = (squareMicData[:,:,6]>minHitRatio)[:,:,np.newaxis].repeat(3,axis=2)
+    img = ((rod + np.array([1, 1, 1])) / 2).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
+    # make sure display correctly
+    #img[:,:,:] = img[::-1,:,:]
+    img = np.swapaxes(img,0,1)
+    minX, minY = squareMicData[0,0,0:2]*1000
+    maxX, maxY = squareMicData[-1,-1,0:2]*1000
+    #print(minX,maxX, minY,maxY)
+    plt.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
+    plt.title('orientation in um')
+    plt.show()
+
+class SquareMic():
+    def __init__(self,squareMicData=None):
+        self.squareMicData = squareMicData
+    def load(self,fName):
+        self.squareMicData = np.load(fName)
+    def plot_orientation(self, minHitRatio=0.5):
+        plot_square_mic(self.squareMicData, minHitRatio)
+
+    def plot_hit_ratio(self):
+        img = np.swapaxes(self.squareMicData[:,:,6], 0, 1)
+        plt.imshow(img, origin='lower')
+        plt.colorbar()
+        plt.show()
+
 class MicFile():
     def __init__(self,fname):
         self.sw, self.snp=self.read_mic_file(fname)
@@ -356,6 +402,13 @@ def combine_mic():
     plot_mic(snp,sw_77,3,0)
     save_mic_file('eulerangles',snp[:,6:9],1)
 
+def test_plot_square_mic():
+    sMic = np.load('Au_Mar17_100_100_0.002.npy')
+    plot_square_mic(sMic, 0.5)
+
+def test_plot():
+    m = MicFile('Au_SYF_.mic.LBFS')
+    m.plot_mic_patches(1,0.5)
 #if __name__ == '__main__':
 
     # sw,snp = read_mic_file('1000micron9GenSquare0.5.mic')
