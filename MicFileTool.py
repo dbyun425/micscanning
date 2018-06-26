@@ -292,6 +292,12 @@ class MicFile():
                 ming = 0.0
                 maxb = 0.0
                 minb = 0.0
+                maxri = 0
+                maxbi = 0
+                maxgi = 0
+                minri = 0
+                mingi = 0
+                minbi = 0
                 for i in range(N):
                     if i in indx:
                         mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
@@ -307,21 +313,29 @@ class MicFile():
                         else:
                             if rod[i,0] > maxr:
                                 maxr = rod[i,0]
+                                maxri = i
                             elif rod[i,0] < minr:
                                 minr = rod[i,0]
+                                minri = i
                             if rod[i,1] > maxg:
                                 maxg = rod[i,1]
+                                maxgi = i
                             elif rod[i,1] < ming:
                                 ming = rod[i,1]
+                                mingi = i
                             if rod[i,2] > maxb:
                                 maxb = rod[i,2]
+                                maxbi = i
                             elif rod[i,2] < minb:
                                 minb = rod[i,2]
+                                minbi = i
                     else:
                         rod[i,:]=[0.0,0.0,0.0]
                 print("Current rod values: ",rod)
                 maxrgb = [maxr,maxg,maxb]
                 minrgb = [minr,ming,minb]
+                maxangs = [self.snp[maxri,6],self.snp[maxgi,7],self.snp[maxbi,8]]
+                minangs = [self.snp[minri,6],self.snp[mingi,7],self.snp[minbi,8]]
                 colors = rod
                 for j in range(N):
                     for k in range(0,3):
@@ -363,7 +377,11 @@ class MicFile():
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
             """write line here for adding text next to the plot"""
-            plt.subplots_adjust(right=0.3) #adjusting window for text to fit
+            maxs = ' '.join(str(np.round_(x,decimals=2)) for x in maxangs)
+            mins = ' '.join(str(np.round_(x,decimals=2)) for x in minangs)
+            plt.figtext(0.78, 0.5, maxs+"\n"+mins)
+            #plt.tight_layout()
+            plt.gcf().subplots_adjust(right=0.75) #adjusting window for text to fit
             plt.show()
             #return voxels.clicked_angles
 
