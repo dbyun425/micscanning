@@ -362,6 +362,8 @@ class MicFile():
 
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
+            """write line here for adding text next to the plot"""
+            plt.subplots_adjust(right=0.3) #adjusting window for text to fit
             plt.show()
             #return voxels.clicked_angles
 
