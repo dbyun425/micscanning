@@ -377,9 +377,9 @@ class MicFile():
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
             """write line here for adding text next to the plot"""
-            maxs = ' '.join(str(np.round_(x,decimals=2)) for x in maxangs)
-            mins = ' '.join(str(np.round_(x,decimals=2)) for x in minangs)
-            plt.figtext(0.78, 0.5, maxs+"\n"+mins)
+            maxs = ','.join(str(np.round_(x,decimals=2)) for x in maxangs)
+            mins = ','.join(str(np.round_(x,decimals=2)) for x in minangs)
+            plt.figtext(0.76, 0.5, "mins :"+maxs+"\nmaxes:"+mins)
             #plt.tight_layout()
             plt.gcf().subplots_adjust(right=0.75) #adjusting window for text to fit
             plt.show()
