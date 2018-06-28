@@ -146,7 +146,7 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         plt.show()
 
 
-def plot_square_mic(squareMicData, minHitRatio):
+def plot_square_mic(squareMicData, minHitRatio, angles):
     '''
     plot the square mic data
     image already inverted, x-horizontal, y-vertical, x dow to up, y: left to right
