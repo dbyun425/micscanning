@@ -12,7 +12,7 @@ This script will contains the basic tool for reading mic file and plot them.
 Modifications for coloring made by Doyee Byun
 Including References to VoxelTool and Replotting Modifications written by Grayson Frazier
 April 10, 2018
->>>>>>> anglelim
+
 '''
 import numpy as np
 import matplotlib
@@ -23,6 +23,8 @@ from matplotlib.collections import PatchCollection
 from matplotlib.collections import PolyCollection
 import RotRep
 from VoxelTool import VoxelClick
+from VoxelTool import VoxelBorders
+
 
 def dist_to_line(point,line):
     '''
@@ -192,30 +194,30 @@ class MicFile():
     def angle_limiter(self,indx, snp,angles):
         #set angle limits here
         new_indx = []
-        xl = angles[0]- .05*angles[0]
-        xh = angles[0]+ .05*angles[0]
-        yl = angles[1]- .05*angles[1]
-        yh = angles[1]+ .05*angles[1]
-        zl = angles[2]- .05*angles[2]
-        zh = angles[2]+ .05*angles[2]
-        for i in range(0,len(indx)):
+        xl = angles[0]- .15*angles[0]
+        xh = angles[0]+ .15*angles[0]
+        yl = angles[1]- .15*angles[1]
+        yh = angles[1]+ .15*angles[1]
+        zl = angles[2]- .15*angles[2]
+        zh = angles[2]+ .15*angles[2]
+        for i in range(len(indx)):
             j = indx[i]
             x = self.snp[j,6]
             y = self.snp[j,7]
             z = self.snp[j,8]
-            if x > xl and x < xh and y > yl and y < yh and z > zl and z < zh:
+            if x >= xl and x <= xh and y >= yl and y <= yh and z >= zl and z <= zh:
                 new_indx.append(indx[i])
         return new_indx
 
     def plot_mic_patches(self,plotType=1,minConfidence=0,maxConfidence=1,limitang=False,angles=[]):
         indx = []
         not_indx = []
-        for i in range(0,len(self.snp)):
+        for i in range(0,len(self.snp)): #limits snp based on confidence
             if self.snp[i,9] >= minConfidence and self.snp[i,9] <= maxConfidence:
                 indx.append(i)
             else:
                 not_indx.append(i)
-        if limitang:
+        if limitang: #inputs the replot device
             indx = self.angle_limiter(indx,self.snp,angles)
         #indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
@@ -264,17 +266,17 @@ class MicFile():
                         minb = rod[i,2]
                     else:
                         if rod[i,0] > maxr:
-                            maxr = rod[i,0]
+                            maxr = rod[i,0]+ .01
                         elif rod[i,0] < minr:
-                            minr = rod[i,0]
+                            minr = rod[i,0]-.01
                         if rod[i,1] > maxg:
-                            maxg = rod[i,1]
+                            maxg = rod[i,1]+.01
                         elif rod[i,1] < ming:
-                            ming = rod[i,1]
+                            ming = rod[i,1]-.01
                         if rod[i,2] > maxb:
-                            maxb = rod[i,2]
+                            maxb = rod[i,2]+.01
                         elif rod[i,2] < minb:
-                            minb = rod[i,2]
+                            minb = rod[i,2]-.01
                 for i in not_indx:
                         rod[i,:]=[0.0,0.0,0.0]
                 print("Current rod values: ",rod)
@@ -318,6 +320,8 @@ class MicFile():
             ax.set_ylim([ymin -.1 ,ymin + side_length +.1])
             plt.axis("equal")
             #note, previously, -.6<=x,y<=.6
+
+            data_borders = VoxelBorders(self.snp, self.sw)
 
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
@@ -376,7 +380,8 @@ def combine_mic():
     #test_plot_mic()
     #combine_mic()
 
-clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
-#MicFile("395z0.mic.LBFS").plot_mic_patches(2,0.8,1,False,[])
-MicFile("Al_final_z1_refit.mic").plot_mic_patches()
+#clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
+MicFile("395z0.mic.LBFS").plot_mic_patches()#2,0.8,1,False,[])
+#MicFile("Al_initial_z1_refit.mic").plot_mic_patches()
+#MicFile("Al_final_z1_refit.mic").plot_mic_patches()
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
