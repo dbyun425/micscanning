@@ -145,6 +145,9 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         ax.axis('scaled')
         plt.show()
 
+def set_color_range(N, indx, is_square_mic):
+    if is_square_mic == False:
+        return
 
 def plot_square_mic(squareMicData, minHitRatio, angles):
     '''
@@ -298,6 +301,7 @@ class MicFile():
                 minri = 0
                 mingi = 0
                 minbi = 0
+                set_color_range(N, indx,False)
                 for i in range(N):
                     if i in indx:
                         mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
