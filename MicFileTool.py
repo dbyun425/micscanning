@@ -214,7 +214,7 @@ def set_color_range(mic, N, indx, mat, quat, rod, is_square_mic):
                 colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
         return colors, maxangs, minangs
 
-def plot_square_mic(squareMicData, minHitRatio,angles):
+def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     '''
     plot the square mic data
     image already inverted, x-horizontal, y-vertical, x dow to up, y: left to right
@@ -228,22 +228,28 @@ def plot_square_mic(squareMicData, minHitRatio,angles):
     :return:
     '''
     indx = []
-    (x,y,z) = squareMicData.shape
-    indx = square_angle_limiter(x,y,squareMicData,angles)
-    mat = RotRep.EulerZXZ2MatVectorized(squareMicData[:,:,3:6].reshape([-1,3])/180.0 *np.pi )
+    smdCopy = squareMicData
+    if anglelime == True:
+        (x,y,z) = squareMicData.shape
+        indx = square_angle_limiter(x,y,squareMicData,angles)
+        for i in range(0,x):
+            for j in range(0,y):
+                if not (i,j) in indx:
+                    smdCopy[i,j,6] = 0.0
+    mat = RotRep.EulerZXZ2MatVectorized(smdCopy[:,:,3:6].reshape([-1,3])/180.0 *np.pi )
     quat = np.empty([mat.shape[0],4])
     rod = np.empty([mat.shape[0],3])
     #set_color_range(None,N,indx,mat,quat,rod,True)
     for i in range(mat.shape[0]):
         quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
         rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
-    hitRatioMask = (squareMicData[:,:,6]>minHitRatio)[:,:,np.newaxis].repeat(3,axis=2)
+    hitRatioMask = (smdCopy[:,:,6]>minHitRatio)[:,:,np.newaxis].repeat(3,axis=2)
     img = ((rod + np.array([1, 1, 1])) / 2).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
     # make sure display correctly
     #img[:,:,:] = img[::-1,:,:]
     img = np.swapaxes(img,0,1)
-    minX, minY = squareMicData[0,0,0:2]*1000
-    maxX, maxY = squareMicData[-1,-1,0:2]*1000
+    minX, minY = smdCopy[0,0,0:2]*1000
+    maxX, maxY = smdCopy[-1,-1,0:2]*1000
     #print(minX,maxX, minY,maxY)
     plt.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
