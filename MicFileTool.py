@@ -145,11 +145,31 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         ax.axis('scaled')
         plt.show()
 
+def square_angle_limiter(x,y, data ,angles):
+    #set angle limits here
+    new_indx = []
+    xl = angles[0]-1.0
+    xh = angles[0]+1.0
+    yl = angles[1]-1.0
+    yh = angles[1]+1.0
+    zl = angles[2]-1.0
+    zh = angles[2]+1.0
+    for i in range(0,x):
+        for j in range(0,y):
+            xang = self.snp[i,j,3]
+            yang = self.snp[i,j,4]
+            zang = self.snp[i,j,5]
+            if xang > xl and xang < xh and yang > yl and yang < yh and zang > zl and zang < zh:
+                new_indx.append((i,j))
+    return new_indx
+
 def set_color_range(mic, N, indx, mat, quat, rod, is_square_mic):
     """
     Function for setting the color range of a plot.
     """
-    if is_square_mic == False:
+    if is_square_mic == True:
+        return
+    else:
         for i in range(N):
             if i in indx:
                 mat[i,:,:] = RotRep.EulerZXZ2Mat(mic.snp[i,6:9]/180.0*np.pi)
@@ -194,7 +214,7 @@ def set_color_range(mic, N, indx, mat, quat, rod, is_square_mic):
                 colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
         return colors, maxangs, minangs
 
-def plot_square_mic(squareMicData, minHitRatio, angles):
+def plot_square_mic(squareMicData, minHitRatio,angles):
     '''
     plot the square mic data
     image already inverted, x-horizontal, y-vertical, x dow to up, y: left to right
@@ -207,9 +227,13 @@ def plot_square_mic(squareMicData, minHitRatio, angles):
             9: additional information
     :return:
     '''
+    indx = []
+    (x,y,z) = squareMicData.shape
+    indx = square_angle_limiter(x,y,squareMicData,angles)
     mat = RotRep.EulerZXZ2MatVectorized(squareMicData[:,:,3:6].reshape([-1,3])/180.0 *np.pi )
     quat = np.empty([mat.shape[0],4])
     rod = np.empty([mat.shape[0],3])
+    #set_color_range(None,N,indx,mat,quat,rod,True)
     for i in range(mat.shape[0]):
         quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
         rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
