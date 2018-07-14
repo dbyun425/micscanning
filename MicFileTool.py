@@ -231,7 +231,7 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     :return:
     '''
     indx = []
-    smdCopy = squareMicData
+    smdCopy = squareMicData.copy()
     if anglelime == True:
         (x,y,z) = squareMicData.shape
         indx = square_angle_limiter(x,y,squareMicData,angles)
