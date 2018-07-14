@@ -11,6 +11,9 @@ Modifications for coloring made by Doyee Byun
 Including References to VoxelTool written by Grayson Frazier
 April 10, 2018
 
+Added functionality for square matrix data format,
+working on gui elements.
+July 14, 2018
 '''
 import numpy as np
 import matplotlib
