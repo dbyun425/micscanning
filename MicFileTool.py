@@ -150,6 +150,7 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
 
 def square_angle_limiter(x,y, data ,angles):
     #set angle limits here
+    #needs modifying for better range setting
     new_indx = []
     xl = angles[0]-1.0
     xh = angles[0]+1.0
@@ -316,6 +317,7 @@ class MicFile():
 
     def angle_limiter(self,indx, snp,angles):
         #set angle limits here
+        #needs modifying for better range setting
         new_indx = []
         xl = angles[0]-1.0
         xh = angles[0]+1.0
