@@ -233,7 +233,7 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     '''
     indx = []
     smdCopy = squareMicData.copy()
-    if anglelime == True:
+    if anglelim == True:
         (x,y,z) = squareMicData.shape
         indx = square_angle_limiter(x,y,squareMicData,angles)
         for i in range(0,x):
@@ -264,8 +264,8 @@ class SquareMic():
         self.squareMicData = squareMicData
     def load(self,fName):
         self.squareMicData = np.load(fName)
-    def plot_orientation(self, minHitRatio=0.5):
-        plot_square_mic(self.squareMicData, minHitRatio)
+    def plot_orientation(self, angles, minHitRatio=0.5, anglelim = False):
+        plot_square_mic(self.squareMicData, minHitRatio, angles, anglelim)
 
     def plot_hit_ratio(self):
         img = np.swapaxes(self.squareMicData[:,:,6], 0, 1)
