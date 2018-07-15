@@ -160,9 +160,9 @@ def square_angle_limiter(x,y, data ,angles):
     zh = angles[2]+1.0
     for i in range(0,x):
         for j in range(0,y):
-            xang = self.snp[i,j,3]
-            yang = self.snp[i,j,4]
-            zang = self.snp[i,j,5]
+            xang = data[i,j,3]
+            yang = data[i,j,4]
+            zang = data[i,j,5]
             if xang > xl and xang < xh and yang > yl and yang < yh and zang > zl and zang < zh:
                 new_indx.append((i,j))
     return new_indx
