@@ -235,11 +235,14 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     smdCopy = squareMicData.copy()
     if anglelim == True:
         (x,y,z) = squareMicData.shape
-        indx = square_angle_limiter(x,y,squareMicData,angles)
+        indx = square_angle_limiter(x,y,smdCopy,angles)
         for i in range(0,x):
             for j in range(0,y):
                 if not (i,j) in indx:
                     smdCopy[i,j,6] = 0.0
+                    smdCopy[i,j,3] = angles[0]
+                    smdCopy[i,j,4] = angles[1]
+                    smdCopy[i,j,5] = angles[2]
     mat = RotRep.EulerZXZ2MatVectorized(smdCopy[:,:,3:6].reshape([-1,3])/180.0 *np.pi )
     quat = np.empty([mat.shape[0],4])
     rod = np.empty([mat.shape[0],3])
