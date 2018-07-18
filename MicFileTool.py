@@ -167,56 +167,103 @@ def square_angle_limiter(x,y, data ,angles):
                 new_indx.append((i,j))
     return new_indx
 
-def set_color_range(mic, N, indx, mat, quat, rod, is_square_mic):
+def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
+    print("indx: ",indx)
+    count = 0
+    for i in range(mat.shape[0]):
+        yi = int(i/x)
+        xi = int(i%x)
+        #print(xi,yi)
+        if (xi,yi) in indx or not anglelim:
+            quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
+            rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
+            if count == 0:
+                maxr = rod[i,0]
+                minr = rod[i,0]
+                maxg = rod[i,1]
+                ming = rod[i,1]
+                maxb = rod[i,2]
+                minb = rod[i,2]
+                count = count + 1
+            else:
+                if rod[i,0] > maxr:
+                    maxr = rod[i,0]
+                    maxri = i
+                elif rod[i,0] < minr:
+                    minr = rod[i,0]
+                    minri = i
+                if rod[i,1] > maxg:
+                    maxg = rod[i,1]
+                    maxgi = i
+                elif rod[i,1] < ming:
+                    ming = rod[i,1]
+                    mingi = i
+                if rod[i,2] > maxb:
+                    maxb = rod[i,2]
+                    maxbi = i
+                elif rod[i,2] < minb:
+                    minb = rod[i,2]
+                    minbi = i
+        else:
+            rod[i,:]=[0.0,0.0,0.0]
+    maxrgb = [maxr,maxg,maxb]
+    minrgb = [minr,ming,minb]
+    maxangs = [rod[maxri,0],rod[maxgi,1],rod[maxbi,2]]
+    minangs = [rod[minri,0],rod[mingi,1],rod[minbi,2]]
+    colors = rod
+    for j in range(mat.shape[0]):
+        for k in range(0,3):
+            colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
+    return colors, maxangs, minangs
+
+def set_color_range(mic, N, indx, mat, quat, rod):
     """
     Function for setting the color range of a plot.
     """
-    if is_square_mic == True:
-        return
-    else:
-        for i in range(N):
-            if i in indx:
-                mat[i,:,:] = RotRep.EulerZXZ2Mat(mic.snp[i,6:9]/180.0*np.pi)
-                quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
-                rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-                if i == indx[0]:
-                    maxr = rod[i,0]
-                    minr = rod[i,0]
-                    maxg = rod[i,1]
-                    ming = rod[i,1]
-                    maxb = rod[i,2]
-                    minb = rod[i,2]
-                else:
-                    if rod[i,0] > maxr:
-                        maxr = rod[i,0]
-                        maxri = i
-                    elif rod[i,0] < minr:
-                        minr = rod[i,0]
-                        minri = i
-                    if rod[i,1] > maxg:
-                        maxg = rod[i,1]
-                        maxgi = i
-                    elif rod[i,1] < ming:
-                        ming = rod[i,1]
-                        mingi = i
-                    if rod[i,2] > maxb:
-                        maxb = rod[i,2]
-                        maxbi = i
-                    elif rod[i,2] < minb:
-                        minb = rod[i,2]
-                        minbi = i
+    for i in range(N):
+        if i in indx:
+            mat[i,:,:] = RotRep.EulerZXZ2Mat(mic.snp[i,6:9]/180.0*np.pi)
+            quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
+            rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
+            if i == indx[0]:
+                maxr = rod[i,0]
+                minr = rod[i,0]
+                maxg = rod[i,1]
+                ming = rod[i,1]
+                maxb = rod[i,2]
+                minb = rod[i,2]
             else:
-                rod[i,:]=[0.0,0.0,0.0]
-        print("Current rod values: ",rod)
-        maxrgb = [maxr,maxg,maxb]
-        minrgb = [minr,ming,minb]
-        maxangs = [mic.snp[maxri,6],mic.snp[maxgi,7],mic.snp[maxbi,8]]
-        minangs = [mic.snp[minri,6],mic.snp[mingi,7],mic.snp[minbi,8]]
-        colors = rod
-        for j in range(N):
-            for k in range(0,3):
-                colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
-        return colors, maxangs, minangs
+                if rod[i,0] > maxr:
+                    maxr = rod[i,0]
+                    maxri = i
+                elif rod[i,0] < minr:
+                    minr = rod[i,0]
+                    minri = i
+                if rod[i,1] > maxg:
+                    maxg = rod[i,1]
+                    maxgi = i
+                elif rod[i,1] < ming:
+                    ming = rod[i,1]
+                    mingi = i
+                if rod[i,2] > maxb:
+                    maxb = rod[i,2]
+                    maxbi = i
+                elif rod[i,2] < minb:
+                    minb = rod[i,2]
+                    minbi = i
+        else:
+            rod[i,:]=[0.0,0.0,0.0]
+    print("Current rod values: ",rod)
+    maxrgb = [maxr,maxg,maxb]
+    minrgb = [minr,ming,minb]
+    maxangs = [rod[maxri,0],rod[maxgi,1],rod[maxbi,2]]
+    minangs = [rod[minri,0],rod[mingi,1],rod[minbi,2]]
+    colors = rod
+    for j in range(N):
+        for k in range(0,3):
+            colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
+    return colors, maxangs, minangs
+
 
 def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     '''
@@ -233,8 +280,8 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     '''
     indx = []
     smdCopy = squareMicData.copy()
+    (x,y,z) = squareMicData.shape
     if anglelim == True:
-        (x,y,z) = squareMicData.shape
         indx = square_angle_limiter(x,y,smdCopy,angles)
         for i in range(0,x):
             for j in range(0,y):
@@ -246,12 +293,15 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     mat = RotRep.EulerZXZ2MatVectorized(smdCopy[:,:,3:6].reshape([-1,3])/180.0 *np.pi )
     quat = np.empty([mat.shape[0],4])
     rod = np.empty([mat.shape[0],3])
-    #set_color_range(None,N,indx,mat,quat,rod,True)
+    colors, maxangs, minangs = set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod,anglelim)
+    """
     for i in range(mat.shape[0]):
         quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
         rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
+    """
     hitRatioMask = (smdCopy[:,:,6]>minHitRatio)[:,:,np.newaxis].repeat(3,axis=2)
-    img = ((rod + np.array([1, 1, 1])) / 2).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
+    #img = ((colors + np.array([1, 1, 1])) / 2).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
+    img = (colors).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
     # make sure display correctly
     #img[:,:,:] = img[::-1,:,:]
     img = np.swapaxes(img,0,1)
@@ -344,6 +394,8 @@ class MicFile():
                 indx.append(i)
         if limitang:
             indx = self.angle_limiter(indx,self.snp,angles)
+        else:
+            indx = list(range(0,len(self.snp)))
         #indx=minConfidence<=self.snp[:,9]<=maxConfidence
         minsw=self.sw/float(2**self.snp[0,4])
         tsw1=minsw*0.5
@@ -384,7 +436,7 @@ class MicFile():
                 minri = 0
                 mingi = 0
                 minbi = 0
-                colors, maxangs, minangs = set_color_range(self, N, indx, mat, quat, rod,False)
+                colors, maxangs, minangs = set_color_range(self, N, indx, mat, quat, rod)
                 """
                 for i in range(N):
                     if i in indx:
@@ -466,8 +518,8 @@ class MicFile():
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
             """write line here for adding text next to the plot"""
-            maxs = ','.join(str(np.round_(x,decimals=2)) for x in maxangs)
-            mins = ','.join(str(np.round_(x,decimals=2)) for x in minangs)
+            maxs = ','.join(str(np.round_(x,decimals=4)) for x in maxangs)
+            mins = ','.join(str(np.round_(x,decimals=4)) for x in minangs)
             plt.figtext(0.76, 0.5, "mins :"+maxs+"\nmaxes:"+mins)
             #plt.tight_layout()
             plt.gcf().subplots_adjust(right=0.75) #adjusting window for text to fit
