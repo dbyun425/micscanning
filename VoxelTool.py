@@ -3,6 +3,9 @@ Writen by Grayson Frazier
 
 This script contains the "VoxelClick" class which allows for interaction with plot
 To be used with plot_mic_patches function in MicFileTool
+
+Modified by Doyee Byun
+Added feature that supports the new square matrix data format
 '''
 
 import matplotlib as mpl
