@@ -169,7 +169,7 @@ def square_angle_limiter(x,y, data ,angles):
 
 def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
     print("indx: ",indx)
-    count = 0
+    first = True
     for i in range(mat.shape[0]):
         yi = int(i/x)
         xi = int(i%x)
@@ -177,14 +177,14 @@ def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
         if (xi,yi) in indx or not anglelim:
             quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
             rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
-            if count == 0:
+            if first:
                 maxr = rod[i,0]
                 minr = rod[i,0]
                 maxg = rod[i,1]
                 ming = rod[i,1]
                 maxb = rod[i,2]
                 minb = rod[i,2]
-                count = count + 1
+                first = False
             else:
                 if rod[i,0] > maxr:
                     maxr = rod[i,0]
