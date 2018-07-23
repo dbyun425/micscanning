@@ -24,6 +24,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.collections import PolyCollection
 import RotRep
 from VoxelTool import VoxelClick
+from VoxelTool import SquareVoxelClick
 
 def dist_to_line(point,line):
     '''
@@ -220,18 +221,27 @@ def set_color_range(mic, N, indx, mat, quat, rod):
     """
     Function for setting the color range of a plot.
     """
+    first = True
+    print(indx)
     for i in range(N):
         if i in indx:
             mat[i,:,:] = RotRep.EulerZXZ2Mat(mic.snp[i,6:9]/180.0*np.pi)
             quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
             rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-            if i == indx[0]:
+            if first:
                 maxr = rod[i,0]
                 minr = rod[i,0]
                 maxg = rod[i,1]
                 ming = rod[i,1]
                 maxb = rod[i,2]
                 minb = rod[i,2]
+                maxri = i
+                minri = i
+                maxgi = i
+                mingi = i
+                maxbi = i
+                minbi = i
+                first = False
             else:
                 if rod[i,0] > maxr:
                     maxr = rod[i,0]
@@ -278,6 +288,7 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
             9: additional information
     :return:
     '''
+    fig, ax = plt.subplots()
     indx = []
     smdCopy = squareMicData.copy()
     (x,y,z) = squareMicData.shape
@@ -308,15 +319,20 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     minX, minY = smdCopy[0,0,0:2]*1000
     maxX, maxY = smdCopy[-1,-1,0:2]*1000
     #print(minX,maxX, minY,maxY)
-    plt.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
+    ax.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
+    voxels = SquareVoxelClick(fig, squareMicData)
+    voxels.connect()
     plt.show()
+
 
 class SquareMic():
     def __init__(self,squareMicData=None):
         self.squareMicData = squareMicData
+
     def load(self,fName):
         self.squareMicData = np.load(fName)
+
     def plot_orientation(self, angles, minHitRatio=0.5, anglelim = False):
         plot_square_mic(self.squareMicData, minHitRatio, angles, anglelim)
 
