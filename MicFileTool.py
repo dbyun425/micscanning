@@ -152,6 +152,8 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
 def square_angle_limiter(x,y, data ,angles):
     #set angle limits here
     #needs modifying for better range setting
+    #Will change to accept indices as arguments as opposed to angles
+    #Might need a recursive helper function of sorts
     new_indx = []
     xl = angles[0]-1.0
     xh = angles[0]+1.0
