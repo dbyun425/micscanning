@@ -145,12 +145,12 @@ def GetSymRotMat(symtype='Cubic'):
     Parameters
     ----------
     symtype: string
-            Symmetry type of crystal. For now only 'Cubic' and 'Hexagonal' are implemented. 
+            Symmetry type of crystal. For now only 'Cubic' and 'Hexagonal' are implemented.
 
     Returns
     ----------
     m:  ndarray
-        A three dimensional numpy array, which has the shape (n,3,3). 
+        A three dimensional numpy array, which has the shape (n,3,3).
     """
     if symtype == 'Cubic':
         m=np.zeros((24,3,3))
@@ -249,7 +249,7 @@ def GetSymRotMat(symtype='Cubic'):
         m[23][0,0]=1
         m[23][1,1]=1
         m[23][2,2]=1
-        
+
         return m
     elif symtype == 'Hexagonal':
         m=np.zeros((12,3,3))
@@ -296,7 +296,7 @@ def Orien2FZ(m,symtype='Cubic'):
     -----------
     oRes:   ndarray
             The rotation matrix after reduced. Note that this function doesn't actually
-            reduce the orientation to fundamental zone, only make sure the angle is the 
+            reduce the orientation to fundamental zone, only make sure the angle is the
             smallest one, so there are multiple orientations have the same angle but
             different directions. oRes is only one of them.
     angle:  scalar
@@ -342,7 +342,7 @@ def Misorien2FZ1(m1,m2,symtype='Cubic'):
     -----------
     oRes:   ndarray
             The misorientation matrix after reduced. Note that this function doesn't actually
-            reduce the orientation to fundamental zone, only make sure the angle is the 
+            reduce the orientation to fundamental zone, only make sure the angle is the
             smallest one, so there are multiple orientations have the same angle but
             different directions. oRes is only one of them.
     angle:  scalar
