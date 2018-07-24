@@ -14,6 +14,9 @@ April 10, 2018
 Added functionality for square matrix data format,
 working on gui elements.
 July 14, 2018
+
+Now modified to be fully interactive!
+July 24, 2018
 '''
 import numpy as np
 import matplotlib
