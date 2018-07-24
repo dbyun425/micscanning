@@ -39,11 +39,12 @@ class SquareVoxelClick():
         Col 6-8 orientation
         Col 9  Confidence
     '''
-    def __init__(self, fig, smd):
+    def __init__(self, fig, smd,squaremic):
         '''
         Canvas figure, snp data, base sidewdth
         '''
         self.smd = smd
+        self.squaremic = squaremic
         self.fig = fig
         self.size = smd[0,0,8]
 
@@ -84,7 +85,7 @@ class SquareVoxelClick():
         print("------------------------------------------------------\n Angles:", orient1, orient2, orient3)
 
         if event.dblclick:#double click to replot the grain
-            self.mic.plot_mic_patches(plotType=1,minConfidence=0.8,maxConfidence=1.0,limitang=True,angles=self.clicked_angles)
+            self.squaremic.plot_orientation([xi,yi])
 
     def connect(self):
         cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)

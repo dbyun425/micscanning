@@ -143,39 +143,46 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
             quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
             #print quat[i,:]
             rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-        print(rod)
+        #print(rod)
         fig, ax = plt.subplots()
         ax.scatter(snp[:,0],snp[:,1],s=scattersize,facecolors=(rod+np.array([1,1,1]))/2)
         ax.axis('scaled')
         plt.show()
 
-def square_angle_limiter(x,y, data ,angles):
+def square_angle_limiter(x,y, data ,angles, coords,indx):
     #set angle limits here
-    #needs modifying for better range setting
-    #Will change to accept indices as arguments as opposed to angles
-    #Might need a recursive helper function of sorts
-    new_indx = []
-    xl = angles[0]-1.0
-    xh = angles[0]+1.0
-    yl = angles[1]-1.0
-    yh = angles[1]+1.0
-    zl = angles[2]-1.0
-    zh = angles[2]+1.0
-    for i in range(0,x):
-        for j in range(0,y):
-            xang = data[i,j,3]
-            yang = data[i,j,4]
-            zang = data[i,j,5]
-            if xang > xl and xang < xh and yang > yl and yang < yh and zang > zl and zang < zh:
-                new_indx.append((i,j))
+    #CAUTION: MAY NOT WORK WHEN THERE IS TOO MUCH DATA
+    #Recursion may become memory intensive;
+    #increasing recursion limit may become necessary
+    new_indx = indx
+    x_index = coords[0]
+    y_index = coords[1]
+    if x_index < 0 or x_index >= x or y_index < 0 or y_index >= y or (x_index,y_index) in new_indx:
+        return new_indx
+    elif angles == []:
+        angles.append(data[x_index,y_index,3])
+        angles.append(data[x_index,y_index,4])
+        angles.append(data[x_index,y_index,5])
+    if abs(data[x_index,y_index,3]-angles[0]) < 1 and abs(data[x_index,y_index,4]-angles[1]) < 1 and abs(data[x_index,y_index,5]-angles[2]) < 1:
+        new_indx.append((x_index,y_index))
+    else:
+        return new_indx
+    angles.clear()
+    angles.append(data[x_index,y_index,3])
+    angles.append(data[x_index,y_index,4])
+    angles.append(data[x_index,y_index,5])
+    new_indx = square_angle_limiter(x,y,data,angles,[x_index-1,y_index],new_indx)
+    new_indx = square_angle_limiter(x,y,data,angles,[x_index,y_index-1],new_indx)
+    new_indx = square_angle_limiter(x,y,data,angles,[x_index+1,y_index],new_indx)
+    new_indx = square_angle_limiter(x,y,data,angles,[x_index,y_index+1],new_indx)
     return new_indx
 
 def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
-    print("indx: ",indx)
+    #print("indx: ",indx)
     first = True
     for i in range(mat.shape[0]):
-        yi = int(i/x)
-        xi = int(i%x)
+        yi = int(i%x)
+        xi = int(i/x)
         #print(xi,yi)
         if (xi,yi) in indx or not anglelim:
             quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
@@ -187,6 +194,12 @@ def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
                 ming = rod[i,1]
                 maxb = rod[i,2]
                 minb = rod[i,2]
+                maxri = i
+                minri = i
+                maxgi = i
+                mingi = i
+                maxbi = i
+                minbi = i
                 first = False
             else:
                 if rod[i,0] > maxr:
@@ -265,7 +278,7 @@ def set_color_range(mic, N, indx, mat, quat, rod):
                     minbi = i
         else:
             rod[i,:]=[0.0,0.0,0.0]
-    print("Current rod values: ",rod)
+    #print("Current rod values: ",rod)
     maxrgb = [maxr,maxg,maxb]
     minrgb = [minr,ming,minb]
     maxangs = [rod[maxri,0],rod[maxgi,1],rod[maxbi,2]]
@@ -277,7 +290,7 @@ def set_color_range(mic, N, indx, mat, quat, rod):
     return colors, maxangs, minangs
 
 
-def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
+def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
     '''
     plot the square mic data
     image already inverted, x-horizontal, y-vertical, x dow to up, y: left to right
@@ -290,12 +303,18 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
             9: additional information
     :return:
     '''
+    assert(len(coords) == 0 or len(coords) == 2), "Please enter the correct number of coordinates"
+    anglelim = not (coords == [])
+    angles = []
     fig, ax = plt.subplots()
     indx = []
     smdCopy = squareMicData.copy()
     (x,y,z) = squareMicData.shape
-    if anglelim == True:
-        indx = square_angle_limiter(x,y,smdCopy,angles)
+    if anglelim:
+        angles.append(squareMicData[coords[0],coords[1],3])
+        angles.append(squareMicData[coords[0],coords[1],4])
+        angles.append(squareMicData[coords[0],coords[1],5])
+        indx = square_angle_limiter(x,y,smdCopy,[],coords,[])
         for i in range(0,x):
             for j in range(0,y):
                 if not (i,j) in indx:
@@ -323,7 +342,7 @@ def plot_square_mic(squareMicData, minHitRatio,angles, anglelim):
     #print(minX,maxX, minY,maxY)
     ax.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
-    voxels = SquareVoxelClick(fig, squareMicData)
+    voxels = SquareVoxelClick(fig, squareMicData,SquareMic)
     voxels.connect()
     plt.show()
 
@@ -335,8 +354,8 @@ class SquareMic():
     def load(self,fName):
         self.squareMicData = np.load(fName)
 
-    def plot_orientation(self, angles, minHitRatio=0.5, anglelim = False):
-        plot_square_mic(self.squareMicData, minHitRatio, angles, anglelim)
+    def plot_orientation(self, coords, minHitRatio=0.5):
+        plot_square_mic(self,self.squareMicData, minHitRatio, coords)
 
     def plot_hit_ratio(self):
         img = np.swapaxes(self.squareMicData[:,:,6], 0, 1)
