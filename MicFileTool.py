@@ -237,7 +237,7 @@ def set_color_range(mic, N, indx, mat, quat, rod):
     Function for setting the color range of a plot.
     """
     first = True
-    print(indx)
+    #print(indx)
     for i in range(N):
         if i in indx:
             mat[i,:,:] = RotRep.EulerZXZ2Mat(mic.snp[i,6:9]/180.0*np.pi)
@@ -340,9 +340,30 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
     minX, minY = smdCopy[0,0,0:2]*1000
     maxX, maxY = smdCopy[-1,-1,0:2]*1000
     #print(minX,maxX, minY,maxY)
+    """
+    xmin = self.snp[indx[0],0]
+    xmax = self.snp[indx[0],0]
+    ymin = self.snp[indx[0],1]
+    ymax = self.snp[indx[0],1]
+    for i in indx:
+        if self.snp[i,0] <= xmin:
+            xmin = self.snp[i,0]
+        if self.snp[i,0] >= xmax:
+            xmax = self.snp[i,0]
+        if self.snp[i,1] <= ymin:
+            ymin = self.snp[i,1]
+        if self.snp[i,1] >= ymax:
+            ymax = self.snp[i,1]
+    if abs(xmax-xmin) > abs(ymax-ymin):
+        side_length = abs(xmax-xmin)
+    else:
+        side_length = abs(ymax-ymin)
+    ax.set_xlim([xmin -.1 ,xmin + side_length +.1])
+    ax.set_ylim([ymin -.1 ,ymin + side_length +.1])
+    """
     ax.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
-    voxels = SquareVoxelClick(fig, squareMicData,SquareMic)
+    voxels = SquareVoxelClick(fig, squareMicData,SquareMic,minHitRatio)
     voxels.connect()
     plt.show()
 
@@ -519,7 +540,7 @@ class MicFile():
                         colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
                         """
                 self.color1= colors
-                print("Color: ", self.color1)
+                #print("Color: ", self.color1)
                 #self.bcolor1=True
             if self.bpatches==False:
                 xy=self.snp[:,:2]
@@ -622,5 +643,50 @@ def test_plot():
     #test_plot_mic()
     #combine_mic()
 
-clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
+#clicked_angles = MicFile("395z0.mic.LBFS").plot_mic_patches(1,0.8,1,False,[])
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
+
+def is_float(x):
+    try:
+        float(x)
+    except ValueError:
+        return False
+    return True
+def run():
+    square_s = input("Is your data file a square matrix file? [y/n]: ")
+    assert(square_s == "y" or square_s == "Y" or square_s == "n" or square_s == "N"), "Please enter in 'y' or 'n' format."
+    if square_s == "y" or square_s == "Y":
+        is_square = True
+    else:
+        is_square = False
+
+    file_name = input("Please enter file name: ")
+
+    conf_s = input("Please enter minimum confidence threshold: ")
+    conf_f = float(conf_s)
+    assert(is_float(conf_s)), "Please enter a valid numerical value."
+
+    print("Please select plot type number")
+    print("1. Orientation")
+    print("2. Confidence levels")
+    plottype_s = input("[1/2]: ")
+    assert(plottype_s == "1" or plottype_s == "2"), "Please enter either '1' or '2'."
+    if plottype_s == "1":
+        is_orient = True
+    else:
+        is_orient = False
+
+    if is_square == True:
+        sqm = SquareMic()
+        sqm.load(file_name)
+        if is_orient:
+            sqm.plot_orientation([],minHitRatio=conf_f)
+        else:
+            sqm.plot_hit_ratio()
+    else:
+        m = MicFile(file_name)
+        if is_orient:
+            plottype_i = 1
+        else:
+            plottype_i = 2
+        m.plot_mic_patches(plottype_i,conf_f,1,False,[])
