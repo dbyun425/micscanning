@@ -81,7 +81,10 @@ class SquareVoxelClick():
         orient3 = self.smd[xi,yi,5]
 
         self.clicked_angles = [orient1, orient2, orient3]
-
+        print("X_index: ",xi)
+        print("Y_index: ",yi)
+        print("X_value: ",self.smd[xi,yi,0])
+        print("Y_value: ",self.smd[xi,yi,1])
 
         print("------------------------------------------------------\n Angles:", orient1, orient2, orient3)
 

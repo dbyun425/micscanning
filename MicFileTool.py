@@ -343,27 +343,32 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
     minX, minY = smdCopy[0,0,0:2]*1000
     maxX, maxY = smdCopy[-1,-1,0:2]*1000
     #print(minX,maxX, minY,maxY)
-    """
-    xmin = self.snp[indx[0],0]
-    xmax = self.snp[indx[0],0]
-    ymin = self.snp[indx[0],1]
-    ymax = self.snp[indx[0],1]
-    for i in indx:
-        if self.snp[i,0] <= xmin:
-            xmin = self.snp[i,0]
-        if self.snp[i,0] >= xmax:
-            xmax = self.snp[i,0]
-        if self.snp[i,1] <= ymin:
-            ymin = self.snp[i,1]
-        if self.snp[i,1] >= ymax:
-            ymax = self.snp[i,1]
-    if abs(xmax-xmin) > abs(ymax-ymin):
-        side_length = abs(xmax-xmin)
-    else:
-        side_length = abs(ymax-ymin)
-    ax.set_xlim([xmin -.1 ,xmin + side_length +.1])
-    ax.set_ylim([ymin -.1 ,ymin + side_length +.1])
-    """
+    if anglelim:
+        (xi_first,yi_first) = indx[0]
+
+        xmin = smdCopy[xi_first,yi_first,0]
+        xmax = smdCopy[xi_first,yi_first,0]
+        ymin = smdCopy[xi_first,yi_first,1]
+        ymax = smdCopy[xi_first,yi_first,1]
+        for (xi,yi) in indx:
+            if smdCopy[xi,yi,0] <= xmin:
+                xmin = smdCopy[xi,yi,0]
+            if smdCopy[xi,yi,0] >= xmax:
+                xmax = smdCopy[xi,yi,0]
+            if smdCopy[xi,yi,1] <= ymin:
+                ymin = smdCopy[xi,yi,1]
+            if smdCopy[xi,yi,1] >= ymax:
+                ymax = smdCopy[xi,yi,1]
+        if abs(xmax-xmin) > abs(ymax-ymin):
+            side_length = abs(xmax-xmin)
+        else:
+            side_length = abs(ymax-ymin)
+        side_length = side_length / smdCopy[0,0,8] * 10
+        xmin = xmin / smdCopy[0,0,8] * 10
+        ymin = ymin / smdCopy[0,0,8] * 10
+        ax.set_xlim([xmin -10 ,xmin + side_length + 10])
+        ax.set_ylim([ymin -10 ,ymin + side_length + 10])
+
     ax.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
     voxels = SquareVoxelClick(fig, squareMicData,SquareMic,minHitRatio)
