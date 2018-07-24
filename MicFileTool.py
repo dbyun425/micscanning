@@ -498,50 +498,6 @@ class MicFile():
                 mingi = 0
                 minbi = 0
                 colors, maxangs, minangs = set_color_range(self, N, indx, mat, quat, rod)
-                """
-                for i in range(N):
-                    if i in indx:
-                        mat[i,:,:] = RotRep.EulerZXZ2Mat(self.snp[i,6:9]/180.0*np.pi)
-                        quat[i,:] = RotRep.quaternion_from_matrix(mat[i,:,:])
-                        rod[i,:] = RotRep.rod_from_quaternion(quat[i,:])
-                        if i == indx[0]:
-                            maxr = rod[i,0]
-                            minr = rod[i,0]
-                            maxg = rod[i,1]
-                            ming = rod[i,1]
-                            maxb = rod[i,2]
-                            minb = rod[i,2]
-                        else:
-                            if rod[i,0] > maxr:
-                                maxr = rod[i,0]
-                                maxri = i
-                            elif rod[i,0] < minr:
-                                minr = rod[i,0]
-                                minri = i
-                            if rod[i,1] > maxg:
-                                maxg = rod[i,1]
-                                maxgi = i
-                            elif rod[i,1] < ming:
-                                ming = rod[i,1]
-                                mingi = i
-                            if rod[i,2] > maxb:
-                                maxb = rod[i,2]
-                                maxbi = i
-                            elif rod[i,2] < minb:
-                                minb = rod[i,2]
-                                minbi = i
-                    else:
-                        rod[i,:]=[0.0,0.0,0.0]
-                print("Current rod values: ",rod)
-                maxrgb = [maxr,maxg,maxb]
-                minrgb = [minr,ming,minb]
-                maxangs = [self.snp[maxri,6],self.snp[maxgi,7],self.snp[maxbi,8]]
-                minangs = [self.snp[minri,6],self.snp[mingi,7],self.snp[minbi,8]]
-                colors = rod
-                for j in range(N):
-                    for k in range(0,3):
-                        colors[j,k] = (rod[j,k]-minrgb[k])/(maxrgb[k]-minrgb[k])
-                        """
                 self.color1= colors
                 #print("Color: ", self.color1)
                 #self.bcolor1=True
@@ -650,11 +606,13 @@ def test_plot():
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
 
 def is_float(x):
+    #Checks if x is a numerical value
     try:
         float(x)
     except ValueError:
         return False
     return True
+
 def run():
     square_s = input("Is your data file a square matrix file? [y/n]: ")
     assert(square_s == "y" or square_s == "Y" or square_s == "n" or square_s == "N"), "Please enter in 'y' or 'n' format."
