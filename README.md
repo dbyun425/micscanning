@@ -2,8 +2,6 @@
 HEDM visualization tool
 =======
 
-HEDM visualization tool.
-
 
 Interactive Version!
 Parameters used for narrowing down grains are just the euler angles, and thus the selection method still has room for noise.
