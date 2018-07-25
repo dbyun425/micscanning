@@ -329,11 +329,6 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
     quat = np.empty([mat.shape[0],4])
     rod = np.empty([mat.shape[0],3])
     colors, maxangs, minangs = set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod,anglelim)
-    """
-    for i in range(mat.shape[0]):
-        quat[i, :] = RotRep.quaternion_from_matrix(mat[i, :, :])
-        rod[i, :] = RotRep.rod_from_quaternion(quat[i, :])
-    """
     hitRatioMask = (smdCopy[:,:,6]>minHitRatio)[:,:,np.newaxis].repeat(3,axis=2)
     #img = ((colors + np.array([1, 1, 1])) / 2).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
     img = (colors).reshape([squareMicData.shape[0],squareMicData.shape[1],3]) * hitRatioMask
@@ -490,18 +485,6 @@ class MicFile():
             quat = np.empty([N,4])
             rod = np.empty([N,3])
             if self.bcolor1==False:
-                maxr = 0.0
-                minr = 0.0
-                maxg = 0.0
-                ming = 0.0
-                maxb = 0.0
-                minb = 0.0
-                maxri = 0
-                maxbi = 0
-                maxgi = 0
-                minri = 0
-                mingi = 0
-                minbi = 0
                 colors, maxangs, minangs = set_color_range(self, N, indx, mat, quat, rod)
                 self.color1= colors
                 #print("Color: ", self.color1)
