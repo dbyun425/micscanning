@@ -152,7 +152,7 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         ax.axis('scaled')
         plt.show()
 
-def square_angle_limiter(x,y, data ,angles, coords,indx):
+def square_angle_limiter(x,y, data ,coords,angles = [], indx=[]):
     #set angle limits here
     #CAUTION: MAY NOT WORK WHEN THERE IS TOO MUCH DATA
     #Recursion may become memory intensive;
@@ -181,10 +181,10 @@ def square_angle_limiter(x,y, data ,angles, coords,indx):
     angles.append(data[x_index,y_index,3])
     angles.append(data[x_index,y_index,4])
     angles.append(data[x_index,y_index,5])
-    new_indx = square_angle_limiter(x,y,data,angles,[x_index-1,y_index],new_indx)
-    new_indx = square_angle_limiter(x,y,data,angles,[x_index,y_index-1],new_indx)
-    new_indx = square_angle_limiter(x,y,data,angles,[x_index+1,y_index],new_indx)
-    new_indx = square_angle_limiter(x,y,data,angles,[x_index,y_index+1],new_indx)
+    new_indx = square_angle_limiter(x,y,data,[x_index-1,y_index],angles,new_indx)
+    new_indx = square_angle_limiter(x,y,data,[x_index,y_index-1],angles,new_indx)
+    new_indx = square_angle_limiter(x,y,data,[x_index+1,y_index],angles,new_indx)
+    new_indx = square_angle_limiter(x,y,data,[x_index,y_index+1],angles,new_indx)
     return new_indx
 
 def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
@@ -324,7 +324,7 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
         angles.append(squareMicData[coords[0],coords[1],3])
         angles.append(squareMicData[coords[0],coords[1],4])
         angles.append(squareMicData[coords[0],coords[1],5])
-        indx = square_angle_limiter(x,y,smdCopy,[],coords,[])
+        indx = square_angle_limiter(x,y,smdCopy,coords,angles,indx)
         for i in range(0,x):
             for j in range(0,y):
                 if not (i,j) in indx:
