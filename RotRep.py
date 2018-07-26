@@ -570,7 +570,7 @@ def MisorinEulerZXZ(euler1,euler2, symtype='Cubic', degree=True):
         misorien = np.empty(m1.shape[0])
         for i in range(m1.shape[0]):
             _, misorien[i] = Misorien2FZ1(m1[i,:],m2[i,:],symtype)
-        print('misorien in degree')
+        #print('misorien in degree')
         return misorien * 180.0 / np.pi
     else:
         print('to be implemented')

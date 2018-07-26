@@ -166,7 +166,14 @@ def square_angle_limiter(x,y, data ,angles, coords,indx):
         angles.append(data[x_index,y_index,3])
         angles.append(data[x_index,y_index,4])
         angles.append(data[x_index,y_index,5])
-    if abs(data[x_index,y_index,3]-angles[0]) < 1 and abs(data[x_index,y_index,4]-angles[1]) < 1 and abs(data[x_index,y_index,5]-angles[2]) < 1:
+    current_angs = []
+    current_angs.append(data[x_index,y_index,3])
+    current_angs.append(data[x_index,y_index,4])
+    current_angs.append(data[x_index,y_index,5])
+    current_angs = np.array([current_angs])
+    old_angs = np.array([angles])
+    misorient = RotRep.MisorinEulerZXZ(current_angs,old_angs)
+    if misorient < 1:
         new_indx.append((x_index,y_index))
     else:
         return new_indx
