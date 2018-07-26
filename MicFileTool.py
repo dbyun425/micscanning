@@ -371,7 +371,9 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords, misor_thresh):
         ymin = ymin / smdCopy[0,0,8] * 10
         ax.set_xlim([xmin -10 ,xmin + side_length + 10])
         ax.set_ylim([ymin -10 ,ymin + side_length + 10])
-
+    print("-------------------------------------------------")
+    print("MaxRod (R,G,B): ", maxangs)
+    print("MinRod (R,G,B): ", minangs)
     ax.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
     voxels = SquareVoxelClick(fig, squareMicData,SquareMic,minHitRatio,misor_thresh)
@@ -530,12 +532,17 @@ class MicFile():
 
             voxels = VoxelClick(fig, self.snp, self.sw, self)
             voxels.connect()
+            print("-------------------------------------------------")
+            print("MaxRod (R,G,B): ",maxangs)
+            print("MinRod (R,G,B): ",minangs)
             """write line here for adding text next to the plot"""
+            """
             maxs = ','.join(str(np.round_(x,decimals=4)) for x in maxangs)
             mins = ','.join(str(np.round_(x,decimals=4)) for x in minangs)
             plt.figtext(0.76, 0.5, "mins :"+maxs+"\nmaxes:"+mins)
             #plt.tight_layout()
             plt.gcf().subplots_adjust(right=0.75) #adjusting window for text to fit
+            """
             plt.show()
             #return voxels.clicked_angles
 

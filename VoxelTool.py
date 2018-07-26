@@ -59,15 +59,7 @@ class SquareVoxelClick():
         ydata = event.ydata+495
         #print(xdata)
         #print(ydata)
-        """
-        self.centers = []
-        for i in range(len(self.snp)):
-            if self.snp[i,3] == 1: #for a triangle pointed up
-                self.centers.append([self.snp[i,0]+self.sw/(2**self.snp[i,4])/2 , self.snp[i,1]+self.sw/(2**self.snp[i,4])/2*np.sqrt(3)/2])
-            else:
-                self.centers.append([self.snp[i,0]+self.sw/2**self.snp[i,4]/2 , self.snp[i,1]-self.sw/(2**self.snp[i,4])/2*np.sqrt(3)/2])
-        self.centers = np.array(self.centers) #this is used to place the marker in the center of the triangluar voxel
-        """
+
         def find_indices(x,y):
             xi = int(x/10)
             yi = int(y/10)
@@ -82,12 +74,12 @@ class SquareVoxelClick():
         orient3 = self.smd[xi,yi,5]
 
         self.clicked_angles = [orient1, orient2, orient3]
+        print("------------------------------------------------------")
         print("X_index: ",xi)
         print("Y_index: ",yi)
         print("X_value: ",self.smd[xi,yi,0])
         print("Y_value: ",self.smd[xi,yi,1])
-
-        print("------------------------------------------------------\n Angles:", orient1, orient2, orient3)
+        print("Angles:", orient1, orient2, orient3)
 
         if event.dblclick:#double click to replot the grain
             self.squaremic.plot_orientation([xi,yi],minHitRatio = self.minHitRatio,misor_thresh=self.misor_thresh)
