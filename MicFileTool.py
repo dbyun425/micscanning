@@ -152,11 +152,12 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         ax.axis('scaled')
         plt.show()
 
-def square_angle_limiter(x,y, data ,coords,angles = [], indx=[]):
+def square_angle_limiter(x,y, data ,coords,angles = [], indx=[],misor_thresh=1.0):
     #set angle limits here
     #CAUTION: MAY NOT WORK WHEN THERE IS TOO MUCH DATA
     #Recursion may become memory intensive;
     #increasing recursion limit may become necessary
+    #print(misor_thresh)
     new_indx = indx
     x_index = coords[0]
     y_index = coords[1]
@@ -173,7 +174,7 @@ def square_angle_limiter(x,y, data ,coords,angles = [], indx=[]):
     current_angs = np.array([current_angs])
     old_angs = np.array([angles])
     misorient = RotRep.MisorinEulerZXZ(current_angs,old_angs)
-    if misorient < 1:
+    if misorient < misor_thresh:
         new_indx.append((x_index,y_index))
     else:
         return new_indx
@@ -181,10 +182,10 @@ def square_angle_limiter(x,y, data ,coords,angles = [], indx=[]):
     angles.append(data[x_index,y_index,3])
     angles.append(data[x_index,y_index,4])
     angles.append(data[x_index,y_index,5])
-    new_indx = square_angle_limiter(x,y,data,[x_index-1,y_index],angles,new_indx)
-    new_indx = square_angle_limiter(x,y,data,[x_index,y_index-1],angles,new_indx)
-    new_indx = square_angle_limiter(x,y,data,[x_index+1,y_index],angles,new_indx)
-    new_indx = square_angle_limiter(x,y,data,[x_index,y_index+1],angles,new_indx)
+    new_indx = square_angle_limiter(x,y,data,[x_index-1,y_index],angles,new_indx,misor_thresh)
+    new_indx = square_angle_limiter(x,y,data,[x_index,y_index-1],angles,new_indx,misor_thresh)
+    new_indx = square_angle_limiter(x,y,data,[x_index+1,y_index],angles,new_indx,misor_thresh)
+    new_indx = square_angle_limiter(x,y,data,[x_index,y_index+1],angles,new_indx,misor_thresh)
     return new_indx
 
 def set_color_range_sq(smdCopy,x,y,indx,mat,quat,rod, anglelim):
@@ -300,7 +301,7 @@ def set_color_range(mic, N, indx, mat, quat, rod):
     return colors, maxangs, minangs
 
 
-def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
+def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords, misor_thresh):
     '''
     plot the square mic data
     image already inverted, x-horizontal, y-vertical, x dow to up, y: left to right
@@ -324,7 +325,7 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
         angles.append(squareMicData[coords[0],coords[1],3])
         angles.append(squareMicData[coords[0],coords[1],4])
         angles.append(squareMicData[coords[0],coords[1],5])
-        indx = square_angle_limiter(x,y,smdCopy,coords,angles,indx)
+        indx = square_angle_limiter(x,y,smdCopy,coords,angles,indx,misor_thresh)
         for i in range(0,x):
             for j in range(0,y):
                 if not (i,j) in indx:
@@ -373,7 +374,7 @@ def plot_square_mic(SquareMic,squareMicData, minHitRatio,coords):
 
     ax.imshow(img,origin='lower',extent=[minX,maxX,minY,maxY])
     plt.title('orientation in um')
-    voxels = SquareVoxelClick(fig, squareMicData,SquareMic,minHitRatio)
+    voxels = SquareVoxelClick(fig, squareMicData,SquareMic,minHitRatio,misor_thresh)
     voxels.connect()
     plt.show()
 
@@ -385,8 +386,8 @@ class SquareMic():
     def load(self,fName):
         self.squareMicData = np.load(fName)
 
-    def plot_orientation(self, coords, minHitRatio=0.5):
-        plot_square_mic(self,self.squareMicData, minHitRatio, coords)
+    def plot_orientation(self, coords=[], minHitRatio=0.5, misor_thresh=1.0):
+        plot_square_mic(self,self.squareMicData, minHitRatio, coords, misor_thresh)
 
     def plot_hit_ratio(self):
         img = np.swapaxes(self.squareMicData[:,:,6], 0, 1)
@@ -636,7 +637,18 @@ def run():
         sqm = SquareMic()
         sqm.load(file_name)
         if is_orient:
-            sqm.plot_orientation([],minHitRatio=conf_f)
+            misorien_s = input("Please enter misorientation threshold (default=1.0): ")
+            try:
+                assert(is_float(misorien_s))
+                misorien_f = float(misorien_s)
+                print(misorien_f)
+            except:
+                print("Input not a numerical value. Defaulting to 1.0")
+                misorien_f = 1.0
+            #assert(is_float(misorien_s)), "Please enter a numerical value."
+            #misorien_f = float(misorien_s)
+
+            sqm.plot_orientation([],minHitRatio=conf_f,misor_thresh=misorien_f)
         else:
             sqm.plot_hit_ratio()
     else:

@@ -39,7 +39,7 @@ class SquareVoxelClick():
         Col 6-8 orientation
         Col 9  Confidence
     '''
-    def __init__(self, fig, smd,squaremic,minHitRatio):
+    def __init__(self, fig, smd,squaremic,minHitRatio,misor_thresh):
         '''
         Canvas figure, snp data, base sidewdth
         '''
@@ -48,6 +48,7 @@ class SquareVoxelClick():
         self.fig = fig
         self.size = smd[0,0,8]
         self.minHitRatio = minHitRatio
+        self.misor_thresh = misor_thresh
 
 
     def onclick(self, event):
@@ -89,7 +90,7 @@ class SquareVoxelClick():
         print("------------------------------------------------------\n Angles:", orient1, orient2, orient3)
 
         if event.dblclick:#double click to replot the grain
-            self.squaremic.plot_orientation([xi,yi],minHitRatio = self.minHitRatio)
+            self.squaremic.plot_orientation([xi,yi],minHitRatio = self.minHitRatio,misor_thresh=self.misor_thresh)
 
     def connect(self):
         cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
