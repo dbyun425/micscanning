@@ -153,6 +153,31 @@ def plot_mic(snp,sw,plotType,minConfidence,maxConfidence,scattersize=2):
         plt.show()
 
 def square_angle_limiter(x,y, data ,coords,angles = [], indx=[],misor_thresh=1.0):
+    """Short summary.
+
+    Parameters
+    ----------
+    x : int
+        Description of parameter `x`.
+    y : int
+        Description of parameter `y`.
+    data : np.matrix
+        Description of parameter `data`.
+    coords : [[int,int]]
+        Description of parameter `coords`.
+    angles : [[float,float,float]]
+        Description of parameter `angles`.
+    indx : [int]
+        Description of parameter `indx`.
+    misor_thresh : float
+        Description of parameter `misor_thresh`.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
+    """
     #set angle limits here
     #CAUTION: MAY NOT WORK WHEN THERE IS TOO MUCH DATA
     #Recursion may become memory intensive;
@@ -609,7 +634,19 @@ def test_plot():
 #MicFile("Al_final_z1_refit.mic").plot_mic_patches()
 
 def is_float(x):
-    #Checks if x is a numerical value
+    """Function that checks if a string x is that of a numerical value
+
+    Parameters
+    ----------
+    x : string
+        string to be checked if it's a number
+
+    Returns
+    -------
+    boolean
+        True if float, False if not
+
+    """
     try:
         float(x)
     except ValueError:
@@ -617,6 +654,14 @@ def is_float(x):
     return True
 
 def run():
+    """
+    Function that runs the main loop
+
+    Returns
+    -------
+
+
+    """
     square_s = input("Is your data file a square matrix file? [y/n]: ")
     assert(square_s == "y" or square_s == "Y" or square_s == "n" or square_s == "N"), "Please enter in 'y' or 'n' format."
     if square_s == "y" or square_s == "Y":
@@ -665,3 +710,4 @@ def run():
         else:
             plottype_i = 2
         m.plot_mic_patches(plottype_i,conf_f,1,False,[])
+    return
