@@ -29,6 +29,32 @@ import RotRep
 from VoxelTool import VoxelClick
 from VoxelTool import SquareVoxelClick
 
+class SquarePoint():
+    def __init__(self, xi, yi):
+        self.x = xi
+        self.y = yi
+        self.up = True
+        self.right = True
+        self.down = True
+        self.left = True
+        return
+
+    def up_blocked():
+        self.up = False
+        return
+
+    def right_blocked():
+        self.right = False
+        return
+
+    def down_blocked():
+        self.down = False
+        return
+
+    def left_blocked():
+        self.left = False
+        return
+
 def dist_to_line(point,line):
     '''
 
