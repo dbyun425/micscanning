@@ -125,9 +125,9 @@ class VoxelClick():
         cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.press)
 
-###############################################################################################################################################################
-########### STUFF TO DO WITH BORDERS.... ######################################################################################################################
-###############################################################################################################################################################
+#################################################################################################
+########### STUFF TO DO WITH BORDERS....#########################################################
+#################################################################################################
 
 def order_snp(snp):
     '''
@@ -147,7 +147,7 @@ def Make_Borders(snp, sw):
     Left/Upper Voxel Data and then Right/Lower Voxel Data
     '''
 
-    #MAKE TUPLES (ROW, U/D)
+    #MAKE TUPLES (ROW, U/D)  [U/D is just 'u' or 'd']
     order_snp(snp) #just to be sure
     #initializing primary values for the loop
     row_dict = {} #the format will be row:elements
@@ -162,20 +162,21 @@ def Make_Borders(snp, sw):
             else:
                 row_dict[(row, "d")].append(snp[i])
         else:
-            row +=1
+            row = (row[0]+1, 'u')###change here
             x_value = snp[i,0]
             row_dict[row] = snp[i] #start a new row term
     #list(x.keys()) or do for i in x.keys()
 
     #and now it's time to make da borders!  Go top to bottom
+    '''
+    The thing below is kinda important...
+    '''
     border_list = np.array([]) #in the form [line segment, left/up voxel, right/down voxel]
     outside_edges = np.array([]) #these are just outside borders in the form [line segment, voxel]
 
     """The Row-to-Row Borders""" #make sure last one doesn't call an error
     for row in row_dict.keys():
-        print (row_dict.keys())
-        print(row)
-        if row[1] == 'd': #dealing with down triangles"range((len(row_dict.keys())-len(row_dict.keys())%2)/2): #for every row (accounts for up and down hence the modulus)"
+        if row[1] == 'd': #dealing with down triangles"range((len(row_dict.keys())-len(row_dict.keys())%2)/2): #for every row (accounts for up and down hence the modulus)" <-- nevermid, ditched this format (too much work)
             for row1indx in range(len(row_dict[row])): #the row1indx is just the index of that row, just to make it easier for Grayson
                 for row2indx in range(len(row_dict[(row[0]+1, "u")])): #testing points in next row which are up triangless
                     bottom_key = (row[0] +1, "u") #just for ease on the eyes
@@ -197,7 +198,8 @@ def Make_Borders(snp, sw):
     for row in row_dict.keys():
         if row[1] == 'u':
             for i in range(len(row_dict[row])-1): #-1 to account for the last edge
-                    border_list = np.append(border_list, [ row_dict[row][i][0:2], row_dict[row][i][0:2], row_dict[row][(row[0], "d")]])
+                    border_list = np.append(border_list, [ [row_dict[row][i][0:2], row_dict[row][i][0:2]], row_dict[row][(row[0], "d")]]) #######Something went wrong here.................................................................
+                        #based on border_list = np.append(border_list, [ [row_dict[row][row1indx][0:2], row_dict[bottom_key][row2indx][0:2]] , row_dict[row][row1indx-1], row_dict[bottom_key][row2indx]])
 
     """The Top and Bottom Edges"""
     if (0, "u") in row_dict.keys():
