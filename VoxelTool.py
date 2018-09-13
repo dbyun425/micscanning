@@ -152,19 +152,35 @@ def Make_Borders(snp, sw):
     #initializing primary values for the loop
     row_dict = {} #the format will be row:elements
     y_value = snp[0,0] #initial value
+    '''
     row = (0, 'u') #initial value
     row_dict[row] = []
     #making rows to later make a border
     for i in range(len(snp)):
         if abs(snp[i,1] - y_value)<= .000001: #agrees with the accuracy of most mic files
             if snp[i,3] == 1: #Triangle facing up
-                row_dict[(row, "u")].append(snp[i])
+                row_dict[(row[0], "u")].append(snp[i])
             else:
                 row_dict[(row, "d")].append(snp[i])
         else:
             row = (row[0]+1, 'u')###change here
             x_value = snp[i,0]
             row_dict[row] = snp[i] #start a new row term
+    #list(x.keys()) or do for i in x.keys()
+    '''
+    row_i = 1#initial value
+    #row_dict[row] = []
+    #making rows to later make a border
+    for i in range(len(snp)):
+        if abs(snp[i,1] - y_value)<= .000001: #agrees with the accuracy of most mic files
+            if snp[i,3] == 1: #Triangle facing up
+                row_dict[(row_i, "u")].append(snp[i])
+            else:
+                row_dict[(row_i, "d")].append(snp[i])
+        else:
+            row_i += 1 #(row+1, 'u')###change here
+            x_value = snp[i,0]
+            row_dict[(row_i, 'u'] = snp[i] #start a new row term
     #list(x.keys()) or do for i in x.keys()
 
     #and now it's time to make da borders!  Go top to bottom
@@ -195,11 +211,27 @@ def Make_Borders(snp, sw):
                         break #break to save computing time
 
     """The Same-Row (i.e. horizontal) Borders"""
-    for row in row_dict.keys():
+    #print row_dict[row_dict.keys[0]]
+    for row in row_dict.keys(): #must fix 'u'
         if row[1] == 'u':
             for i in range(len(row_dict[row])-1): #-1 to account for the last edge
-                    border_list = np.append(border_list, [ [row_dict[row][i][0:2], row_dict[row][i][0:2]], row_dict[row][(row[0], "d")]]) #######Something went wrong here.................................................................
-                        #based on border_list = np.append(border_list, [ [row_dict[row][row1indx][0:2], row_dict[bottom_key][row2indx][0:2]] , row_dict[row][row1indx-1], row_dict[bottom_key][row2indx]])
+                print("Check_0" + str(i))
+                print(row_dict[row])
+                print(row_dict[row][i])
+                x = row_dict[row]
+                y = x[i]
+                print("y is ", y)
+                z = y[0:2]
+                print("Check 1: " + str(row_dict[row][i][0:2]))
+                print("Check 2: " + str(row_dict[row][i][0:2]))
+                print("Check 3: " + str(row_dict[row][i]))
+                print("Check 4: " + str(row_dict[(row[0], "d")][i]))
+
+                border_list = np.append(border_list, [ [row_dict[row][i][0:2],        row_dict[row][i][0:2]],                 row_dict[row][i],         row_dict[(row[0], "d")][i]])
+                #border_list = np.append(border_list, [ [row_dict[row][i][0:2],        row_dict[row][i][0:2]],                row_dict[row][(row[0], "d")]])
+                border_list = np.append(border_list, [ [row_dict[row][row1indx][0:2], row_dict[bottom_key][row2indx][0:2]] , row_dict[row][row1indx-1], row_dict[bottom_key][row2indx]])
+                #######Something went wrong here.................................................................
+                #based on border_list = np.append(border_list, [ [row_dict[row][row1indx][0:2], row_dict[bottom_key][row2indx][0:2]] , row_dict[row][row1indx-1], row_dict[bottom_key][row2indx]])
 
     """The Top and Bottom Edges"""
     if (0, "u") in row_dict.keys():
