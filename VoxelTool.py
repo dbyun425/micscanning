@@ -147,11 +147,14 @@ def Make_Borders(snp, sw):
     Left/Upper Voxel Data and then Right/Lower Voxel Data
     '''
 
-    #MAKE TUPLES (ROW, U/D)  [U/D is just 'u' or 'd']
+    #MAKE TUPLES (ROW, u/d)  [u/d is just 'u' or 'd']
     order_snp(snp) #just to be sure
     #initializing primary values for the loop
     row_dict = {} #the format will be row:elements
     y_value = snp[0,0] #initial value
+    ################################
+    ###Making Some changes##########
+    ################################
     '''
     row = (0, 'u') #initial value
     row_dict[row] = []
