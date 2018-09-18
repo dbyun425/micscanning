@@ -154,12 +154,14 @@ def Make_Borders(snp, sw):
     ################################
     ###Making Some changes##########
     ################################
+    
+    
     #initialize values
     y_value = snp[0,0] #initial value
     if snp[0][3] == 1: #Pointing up
         row = (0,'u')
     else:
-        row - (0,'d')
+        row = (0,'d')
     row_dict[row] = []
     
     #making rows to later make a border
@@ -168,10 +170,10 @@ def Make_Borders(snp, sw):
             if snp[i,3] == 1: #Triangle facing up
                 row_dict[(row[0], "u")].append(snp[i])
             else:
-                row_dict[(row, "d")].append(snp[i])
+                row_dict[(row[0], "d")].append(snp[i])
         else:
             row = (row[0]+1, 'u')###change here
-            x_value = snp[i,0]
+            y_value = snp[i,1]
             row_dict[row] = snp[i] #start a new row term
     #list(x.keys()) or do for i in x.keys()
     '''
