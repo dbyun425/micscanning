@@ -151,13 +151,17 @@ def Make_Borders(snp, sw):
     order_snp(snp) #just to be sure
     #initializing primary values for the loop
     row_dict = {} #the format will be row:elements
-    y_value = snp[0,0] #initial value
     ################################
     ###Making Some changes##########
     ################################
-    '''
-    row = (0, 'u') #initial value
+    #initialize values
+    y_value = snp[0,0] #initial value
+    if snp[0][3] == 1: #Pointing up
+        row = (0,'u')
+    else:
+        row - (0,'d')
     row_dict[row] = []
+    
     #making rows to later make a border
     for i in range(len(snp)):
         if abs(snp[i,1] - y_value)<= .000001: #agrees with the accuracy of most mic files
@@ -185,6 +189,7 @@ def Make_Borders(snp, sw):
             x_value = snp[i,0]
             row_dict[(row_i, 'u'] = snp[i] #start a new row term
     #list(x.keys()) or do for i in x.keys()
+    '''
 
     #and now it's time to make da borders!  Go top to bottom
     '''
