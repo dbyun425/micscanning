@@ -168,7 +168,8 @@ def Make_Borders(snp, sw):
     for i in range(len(snp)):
         if abs(snp[i,1] - y_value)<= .000001: #agrees with the accuracy of most mic files
             if snp[i,3] == 1: #Triangle facing up
-                row_dict[(row[0], "u")].append(snp[i])
+               	 np.append(row_dict[(row[0], "u")], snp[i])
+
             else:
                 row_dict[(row[0], "d")].append(snp[i])
         else:
