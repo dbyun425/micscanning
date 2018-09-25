@@ -176,6 +176,8 @@ def Make_Borders(snp, sw):
             row = (row[0]+1, 'u')###change here
             y_value = snp[i,1]
             row_dict[row] = snp[i] #start a new row term
+    print("here boi:", row_dict[list(row_dict.keys())[0]])
+    print("here boi:", row_dict[(0, 'u')])
     #list(x.keys()) or do for i in x.keys()
     '''
     row_i = 1#initial value
